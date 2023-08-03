@@ -59,6 +59,7 @@ NumericVector generate_random_projection(int n, int M, bool with_replacement) {
   return R;
 }
 
+
 //[[Rcpp::export]]
 IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs) {
   //set sizes of array
@@ -122,6 +123,35 @@ IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, Int
   }
   IntegerMatrix pairs(2,1);
   return pairs;
+}
+
+
+// function to calculate the interaction strength γjk for pair (j, k)
+// [[Rcpp::export]]
+double interaction_strength(NumericMatrix X, NumericVector Y, int j, int k) {
+  int n = X.nrow();
+  int p = X.ncol();
+  int count = 0;
+  double sum = 0.0;
+
+  // calculate Z(n x p) matrix
+  NumericMatrix Z(n, p);
+  for (int i=0; i<n; ++i) {
+    for (int l=0; l < p;++l) {
+      Z(i,l) = Y[i]*X(i, l);
+    }
+  }
+
+  // Calculate the interaction strength gamma_jk
+  for (int i = 0; i < n; ++i) {
+    // Check if Yi = Xij * Xik
+    if (Y[i] == X(i, j) * X(i, k)) {
+      sum += 1.0;
+    }
+  }
+
+  // retrn it
+  return sum / n;
 }
 
 
