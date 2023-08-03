@@ -35,8 +35,8 @@ NumericVector generate_random_projection(int n, int M, bool with_replacement) {
   NumericVector R(n); // Initialize vector R with zeros
   NumericVector indices1(M);
   IntegerVector v = seq(1,n);
-  // Sampling with replacement
-  indices1 = Rcpp::sample(v, M, with_replacement); // Sample M indices with replacement
+  // Sampling with/o replacement
+  indices1 = Rcpp::sample(v, M, with_replacement);
 
   for (int i = 0; i < M; ++i) {
     indices1[i] = indices1[i] - 1;
