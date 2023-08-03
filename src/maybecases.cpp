@@ -2,21 +2,21 @@
 using namespace Rcpp;
 
 //[[Rcpp::export]]
-IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs) {
+IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs){
   int nu = u.size();
-  int nv = v.size();
+  int nv =v.size();
 
   IntegerMatrix pairs(2, max_number_of_pairs);
   int n = 0;
 
   // Sorting the v vector
-  NumericVector sorted_v = clone(v);
+  NumericVector sorted_v=clone(v);
   std::sort(sorted_v.begin(), sorted_v.end());
 
   // Set precision epsilon
   double eps = 0.0000001;
 
-  for (int i = 0; i < nu; ++i) {
+  for (int i=0; i<nu; ++i) {
     //  lower bound using binary search
     int lower_bound = std::lower_bound(sorted_v.begin(), sorted_v.end(), u[i] - eps) - sorted_v.begin();
 
