@@ -1,5 +1,4 @@
-#include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
+#include <Rcpp.h>
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -36,13 +35,8 @@ NumericVector generate_random_projection(int n, int M, bool with_replacement) {
   NumericVector R(n); // Initialize vector R with zeros
   NumericVector indices1(M);
   IntegerVector v = seq(1,n);
-
-  if (with_replacement) {
-    // Sampling with replacement
-    indices1 = Rcpp::sample(v, M, true); // Sample M indices with replacement
-  } else {
-    indices1 = Rcpp::sample(v, M, false); // Sample M indices without replacement
-  }
+  // Sampling with replacement
+  indices1 = Rcpp::sample(v, M, with_replacement); // Sample M indices with replacement
 
   for (int i = 0; i < M; ++i) {
     indices1[i] = indices1[i] - 1;
@@ -50,14 +44,16 @@ NumericVector generate_random_projection(int n, int M, bool with_replacement) {
 
   for (int i = 0; i < n; ++i) {
     IntegerVector ind = findIndex(indices1, i);
-    double sum1 = 0; // Declare and initialize sum1 here
-    for (int j = 0; j <= ind.size(); ++j) {
-      Rcout<<"l"<<ind.size();
-      Rcout<<ind;
-      sum1 += D[ind[j]];
-      Rcout<<sum1;
+    float sum1 = 0.0; // Declare and initialize sum1 here
+    if(ind.size()==1){
+      R[i]=D[ind[0]];
     }
-    R[i] = sum1;
+    else{
+      for(int j = 0; j < ind.size(); ++j) {
+      sum1 += D[ind[j]];
+    }
+      R[i] = sum1;}
+
   }
 
   return R;
