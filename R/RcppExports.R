@@ -29,10 +29,6 @@ binary_search_cpp <- function(arr, target) {
     .Call(`_testxyz1_binary_search_cpp`, arr, target)
 }
 
-equal_pairs <- function(u, v, max_number_of_pairs) {
-    .Call(`_testxyz1_equal_pairs`, u, v, max_number_of_pairs)
-}
-
 interaction_strength <- function(X, Y, j, k) {
     .Call(`_testxyz1_interaction_strength`, X, Y, j, k)
 }

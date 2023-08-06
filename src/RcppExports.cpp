@@ -98,19 +98,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// equal_pairs
-IntegerMatrix equal_pairs(NumericVector u, NumericVector v, int max_number_of_pairs);
-RcppExport SEXP _testxyz1_equal_pairs(SEXP uSEXP, SEXP vSEXP, SEXP max_number_of_pairsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type u(uSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type v(vSEXP);
-    Rcpp::traits::input_parameter< int >::type max_number_of_pairs(max_number_of_pairsSEXP);
-    rcpp_result_gen = Rcpp::wrap(equal_pairs(u, v, max_number_of_pairs));
-    return rcpp_result_gen;
-END_RCPP
-}
 // interaction_strength
 double interaction_strength(NumericMatrix X, NumericVector Y, int j, int k);
 RcppExport SEXP _testxyz1_interaction_strength(SEXP XSEXP, SEXP YSEXP, SEXP jSEXP, SEXP kSEXP) {
@@ -276,7 +263,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_generate_uniform_values", (DL_FUNC) &_testxyz1_generate_uniform_values, 3},
     {"_testxyz1_generate_random_projection", (DL_FUNC) &_testxyz1_generate_random_projection, 3},
     {"_testxyz1_binary_search_cpp", (DL_FUNC) &_testxyz1_binary_search_cpp, 2},
-    {"_testxyz1_equal_pairs", (DL_FUNC) &_testxyz1_equal_pairs, 3},
     {"_testxyz1_interaction_strength", (DL_FUNC) &_testxyz1_interaction_strength, 4},
     {"_testxyz1_push", (DL_FUNC) &_testxyz1_push, 2},
     {"_testxyz1_binaryToInt", (DL_FUNC) &_testxyz1_binaryToInt, 1},
