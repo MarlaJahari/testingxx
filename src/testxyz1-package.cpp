@@ -101,75 +101,6 @@ bool binary_search_cpp(NumericVector arr, double target) {
 
 
 
-//previously implemented function, delete later
-//[[Rcpp::export]]
-IntegerMatrix equal_pairs(NumericVector u, NumericVector v, int max_number_of_pairs) {
-  //set sizes of array
-  int nu = u.size();
-  int nv = v.size();
-  IntegerVector ou=seq(0,nu-1);
-  IntegerVector ov=seq(0,nv-1);
-
-  //init two lists to store pairs
-  std::list<int> pairs_u;
-  std::list<int> pairs_v;
-
-  //set pointers
-  int start = 0;
-  int j = 0;
-
-  //set counter
-  int count = 0;
-
-  //set precision epsilon
-  double eps = 0.0000001;
-
-  //start looping through u vector
-  for(int i = 0; i < nu; ++i) {
-
-    //increase if too small
-    while(v[start]<u[i]-eps && start < nv-1) {
-      ++start;
-    }
-
-    //if close consider the pairs that might be close
-    if(std::abs(v[start]-u[i]) < eps) {
-      j = start;
-      while(std::abs(v[j]-u[i]) < eps) {
-        //add pairs that are close
-        pairs_u.push_front(ou[i]);
-        pairs_v.push_front(ov[j]);
-
-        ++j;
-        ++count;
-        if(j >= nv) {
-          break;
-        }
-      }
-    }
-    // too many pairs kill the search
-    if(count > max_number_of_pairs) {
-      break;
-    }
-  }
-  int n = 0;
-  //fill pairs in a 2x(pairs) matrix
-  if(pairs_u.size() > 0) {
-    IntegerMatrix pairs(2,pairs_u.size());
-    while(!pairs_u.empty()) {
-      pairs(0,n)=pairs_u.back();
-      pairs_u.pop_back();
-      pairs(1,n)=pairs_v.back();
-      pairs_v.pop_back();
-      ++n;
-    }
-    return pairs;
-  }
-  IntegerMatrix pairs(2,1);
-  return pairs;
-}
-
-
 // function to calculate the interaction strength γjk for pair (j, k)
 // [[Rcpp::export]]
 double interaction_strength(NumericMatrix X, NumericVector Y, int j, int k) {
@@ -308,7 +239,7 @@ IntegerMatrix strongest_pairs(NumericMatrix X, NumericVector Y, int M, int L, in
     NumericVector R=generate_random_projection(n, M, 0);
     NumericVector x=transpose(X)*R;
     NumericVector z=transpose(Z)*R;
-    IntegerMatrix eq=equal_pairs(x,z,50);
+    IntegerMatrix eq(2,1);
     for(int i=0;i < eq.ncol();++i){
 
       if(interaction_strength(X,Y,eq(_,i)[0],eq(_,i)[1])>gamma){
