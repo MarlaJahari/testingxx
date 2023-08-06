@@ -183,13 +183,74 @@ NumericMatrix push(IntegerMatrix M, IntegerVector new_vector) {
 }
 
 
+// Function to convert -1 to 0 and convert binary columns to integer values
+// [[Rcpp::export]]
+IntegerVector binaryToInt(NumericMatrix matrix) {
+  int n = matrix.nrow();
+  int p = matrix.ncol();
+  IntegerVector result(p);
+
+  for (int col = 0; col < p; col++) {
+    int decimalValue = 0;
+    for (int row = 0; row < n; row++) {
+      if (matrix(row, col) == -1) {
+        matrix(row, col) = 0; // Convert -1 to 0
+      }
+      decimalValue += matrix(row, col) * pow(2, n - row - 1);
+    }
+    result[col] = decimalValue;
+  }
+
+  return result;
+}
+
+
+// Function to find pair matches between vectors x and z
+// [[Rcpp::export]]
+NumericMatrix find_pair_matches(IntegerVector x0,IntegerVector z0) {
+  int p = x0.size();
+  int n = z0.size();
+  int total_pairs = p * (p);
+  NumericMatrix result(2, total_pairs);
+
+  NumericVector x = as<NumericVector>(x0);
+  NumericVector z = as<NumericVector>(z0);
+
+  // Sort the input vectors
+  std::vector<double> new_vec_1(x.begin(), x.end());
+  std::vector<double> new_vec_2(z.begin(), z.end());
+  std::sort(new_vec_1.begin(), new_vec_1.end());
+  std::vector<double> temp=new_vec_1;
+
+  // Find pair matches and store the indices
+  int col = 0;
+  for (int i = 0; i < n; ++i){
+    new_vec_1=temp;
+    if(std::binary_search(new_vec_1.begin(), new_vec_1.end(), new_vec_2[i])){
+      result(0, col) = std::distance(new_vec_1.begin(), std::lower_bound(new_vec_1.begin(), new_vec_1.end(), new_vec_2[i])) + 1;
+      result(1, col) = i + 1;
+      //new_vec_1[std::distance(new_vec_1.begin(), std::lower_bound(new_vec_1.begin(), new_vec_1.end(), new_vec_2[i]))]+=0.00001; //s0 that the iterator will skip this, but still count index
+      col++;
+      //new_vec_1=cut_first_element(new_vec_1);
+    }
+
+  }
+
+  // Resize the result matrix to remove unused columns
+  result = result(_, Range(0, col - 1));
+
+  return result;
+}
+
+
+
 // function implementing final xyz
 // [[Rcpp::export]]
 IntegerMatrix strongest_pairs(NumericMatrix X, NumericVector Y, int M, int L, int gamma) {
   int n = X.nrow();
   int p = X.ncol();
   NumericMatrix Z(n,p);
-  if(p!=Y.size()){
+  if(n!=Y.size()){
     stop("Inconsistency in Dimensions, come back later");
   }
   for (int i=0; i<n; ++i) {
@@ -217,13 +278,98 @@ IntegerMatrix strongest_pairs(NumericMatrix X, NumericVector Y, int M, int L, in
 
 }
 
+
+// function implementing final xyz
+// [[Rcpp::export]]
+NumericMatrix strongest_pairs_binary(NumericMatrix X, NumericVector Y) {
+  int n = X.nrow();
+  int p = X.ncol();
+  NumericMatrix Z(n,p);
+  if(n!=Y.size()){
+    stop("Inconsistency in Dimensions, come back later when you attain consistency");
+  }
+  for (int i=0; i<n; ++i) {
+    for (int l=0; l < p;++l) {
+      Z(i,l) = Y[i]*X(i, l);
+    }
+  }
+  IntegerVector x=binaryToInt(X);
+  IntegerVector z=binaryToInt(Z);
+
+  return find_pair_matches(x,z);
+
+
+}
+
+// Function that cuts everything it sees
+// [[Rcpp::export]]
+std::vector<double> cut(const std::vector<double>& input_vec) {
+  return std::vector<double>(input_vec.begin(), input_vec.end()-1);
+}
+
+// [[Rcpp::export]]
+bool bin(NumericVector vec){
+ return std::binary_search(vec.begin(), vec.end(), 2);
+}
+
+
 // [[Rcpp::export]]
 NumericMatrix generateMatrix(int n, int p) {
   NumericMatrix matrix(n, p);
   return matrix;
 }
+
+// Function to create a random binary matrix
 // [[Rcpp::export]]
-NumericVector go(int n) {
-  NumericVector vec(n);
+NumericMatrix random_binary_matrix(int n, int p) {
+  NumericMatrix mat(n, p);
+
+  // Set random seed (optional)
+  // srand(time(NULL));
+
+  // Fill the matrix with random binary values
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < p; ++j) {
+      // Generate a random value between 0 and 1
+      double random_value = R::runif(0, 1);
+
+      // Convert to binary (0 or 1)
+      mat(i, j) = (random_value < 0.5) ? 0 : 1;
+    }
+  }
+
+  return mat;
+}
+
+// Function to generate a random binary vector of size n with elements -1 and 1
+// [[Rcpp::export]]
+NumericVector random_binary_vector(int n) {
+  NumericVector binaryVector(n);
+
+  // Set seed for reproducibility
+  srand(time(0));
+
+  for (int i = 0; i < n; i++) {
+    int randomNumber = rand() % 2; // Generate random number 0 or 1
+    binaryVector[i] = (randomNumber == 0) ? 0 : 1; // Convert 0 to -1, 1 to 1
+  }
+
+  return binaryVector;
+}
+
+
+// [[Rcpp::export]]
+NumericVector go(int n, int p) {
+  NumericVector vec(n); // Create a NumericVector with size n
+  std::fill(vec.begin(), vec.end(), p); // Set all elements to the value p
   return vec;
 }
+
+// [[Rcpp::export]]
+IntegerVector goo(int n) {
+  IntegerVector vec={5,2,2,3};//seq(1,n); // Create a NumericVector with size n
+  return vec;
+}
+
+
+
