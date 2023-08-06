@@ -13,12 +13,20 @@ findIndex <- function(array, value) {
     .Call(`_testxyz1_findIndex`, array, value)
 }
 
+sorted_index_vector <- function(v) {
+    .Call(`_testxyz1_sorted_index_vector`, v)
+}
+
 generate_uniform_values <- function(n, a = 0.0, b = 1.0) {
     .Call(`_testxyz1_generate_uniform_values`, n, a, b)
 }
 
 generate_random_projection <- function(n, M, with_replacement) {
     .Call(`_testxyz1_generate_random_projection`, n, M, with_replacement)
+}
+
+binary_search_cpp <- function(arr, target) {
+    .Call(`_testxyz1_binary_search_cpp`, arr, target)
 }
 
 equal_pairs <- function(u, v, max_number_of_pairs) {
@@ -33,15 +41,47 @@ push <- function(M, new_vector) {
     .Call(`_testxyz1_push`, M, new_vector)
 }
 
+binaryToInt <- function(matrix) {
+    .Call(`_testxyz1_binaryToInt`, matrix)
+}
+
+find_pair_matches <- function(x0, z0) {
+    .Call(`_testxyz1_find_pair_matches`, x0, z0)
+}
+
 strongest_pairs <- function(X, Y, M, L, gamma) {
     .Call(`_testxyz1_strongest_pairs`, X, Y, M, L, gamma)
+}
+
+strongest_pairs_binary <- function(X, Y) {
+    .Call(`_testxyz1_strongest_pairs_binary`, X, Y)
+}
+
+cut <- function(input_vec) {
+    .Call(`_testxyz1_cut`, input_vec)
 }
 
 generateMatrix <- function(n, p) {
     .Call(`_testxyz1_generateMatrix`, n, p)
 }
 
-go <- function(n) {
-    .Call(`_testxyz1_go`, n)
+random_binary_matrix <- function(n, p) {
+    .Call(`_testxyz1_random_binary_matrix`, n, p)
+}
+
+random_binary_vector <- function(n) {
+    .Call(`_testxyz1_random_binary_vector`, n)
+}
+
+go <- function(n, p) {
+    .Call(`_testxyz1_go`, n, p)
+}
+
+vec1 <- function(n = 0L) {
+    .Call(`_testxyz1_vec1`, n)
+}
+
+vec2 <- function(n = 0L) {
+    .Call(`_testxyz1_vec2`, n)
 }
 
