@@ -17,6 +17,26 @@ sorted_index_vector <- function(v) {
     .Call(`_testxyz1_sorted_index_vector`, v)
 }
 
+apply_permutation <- function(vec, p) {
+    .Call(`_testxyz1_apply_permutation`, vec, p)
+}
+
+combine <- function(x, y) {
+    .Call(`_testxyz1_combine`, x, y)
+}
+
+push <- function(M, new_vector) {
+    invisible(.Call(`_testxyz1_push`, M, new_vector))
+}
+
+find <- function(v, k) {
+    .Call(`_testxyz1_find`, v, k)
+}
+
+pair_search3 <- function(x, y) {
+    .Call(`_testxyz1_pair_search3`, x, y)
+}
+
 generate_uniform_values <- function(n, a = 0.0, b = 1.0) {
     .Call(`_testxyz1_generate_uniform_values`, n, a, b)
 }
@@ -33,16 +53,16 @@ interaction_strength <- function(X, Y, j, k) {
     .Call(`_testxyz1_interaction_strength`, X, Y, j, k)
 }
 
-push <- function(M, new_vector) {
-    .Call(`_testxyz1_push`, M, new_vector)
-}
-
 binaryToInt <- function(matrix) {
     .Call(`_testxyz1_binaryToInt`, matrix)
 }
 
 find_pair_matches <- function(x0, z0) {
     .Call(`_testxyz1_find_pair_matches`, x0, z0)
+}
+
+find_pair_matches2 <- function(x0, z0) {
+    .Call(`_testxyz1_find_pair_matches2`, x0, z0)
 }
 
 strongest_pairs <- function(X, Y, M, L, gamma) {
@@ -79,5 +99,9 @@ vec1 <- function(n = 0L) {
 
 vec2 <- function(n = 0L) {
     .Call(`_testxyz1_vec2`, n)
+}
+
+r <- function(n, minValue = 0L, maxValue = 10L) {
+    .Call(`_testxyz1_r`, n, minValue, maxValue)
 }
 
