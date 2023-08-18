@@ -30,6 +30,164 @@ IntegerVector sorted_index_vector(NumericVector v) {
 }
 
 
+// [[Rcpp::export]]
+NumericVector apply_permutation(NumericVector vec, IntegerVector p) {
+  int n = vec.size();
+  std::vector<bool> done(n);
+
+  NumericVector result(n);
+
+  for (int i = 0; i < n; ++i) {
+    if (done[i]) {
+      continue;
+    }
+    done[i] = true;
+    int prev_j = i;
+    int j = p[i];
+    while (i != j) {
+      result[j] = vec[prev_j];
+      done[j] = true;
+      prev_j = j;
+      j = p[j];
+    }
+    result[j] = vec[prev_j];
+  }
+
+  return result;
+}
+
+
+// [[Rcpp::export]]
+NumericVector combine(NumericVector x, NumericVector y) {
+  int n = x.size();
+  // append elements from y to the end of x
+  for (int i=0; i <n; ++i) {
+    x.push_back(y[i]);
+
+  }
+  return x;
+}
+
+// [[Rcpp::export]]
+void push(IntegerMatrix M, IntegerVector new_vector) {
+  int nrow = M.nrow();
+  int ncol = M.ncol();
+  int s = new_vector.size();
+
+  if (s == ncol) { // push new_vector as an (n+1)th row
+    IntegerMatrix new_matrix(nrow + 1, ncol);
+
+    // cpy elements from the old matrix to the new matrix
+    for (int i=0; i <nrow; ++i) {
+      for (int j=0; j <ncol; ++j) {
+        new_matrix(i,j) = M(i,j);
+      }
+    }
+
+    // append the new vector as the last row of the new matrix
+    for (int j=0; j<ncol; ++j) {
+      new_matrix(nrow,j) = new_vector[j];
+    }
+
+    M= new_matrix;
+
+
+  } else if (s == nrow) { // Push new_vector as a (p+1)th column
+    IntegerMatrix new_matrix(nrow, ncol + 1);
+
+    // copy elements from the old matrix to the new matrix
+    for (int i= 0; i <nrow; ++i) {
+      for (int j=0; j <ncol; ++j) {
+        new_matrix(i,j) = M(i, j);
+      }
+    }
+
+    // append the new vector as last column of the new matrix
+    for (int i=0; i < nrow; ++i) {
+      new_matrix(i, ncol) = new_vector[i];
+    }
+
+    M= new_matrix;
+
+
+  } else { // an error for incompatible dimensions
+    Rcpp::stop("Dimensions of the matrix and vector are not suitable for pushing.");
+  }
+}
+
+//dont consider, should be optimised
+// [[Rcpp::export]]
+List find(IntegerVector v, int k) {
+  std::sort(v.begin(), v.end());
+
+  int n = v.size();
+  List result;
+
+  for (int i = 0; i < n; ++i) {
+    int a = v[i];
+    IntegerVector::iterator it = std::lower_bound(v.begin(), v.end(), a + k);
+
+    if (it != v.end()) {
+      int count = n - (it - v.begin());
+      IntegerVector pairs(count);
+
+      for (int j = it - v.begin(); j < n; ++j) {
+        pairs[j - (it - v.begin())] = a;
+        pairs[j - (it - v.begin()) + 1] = v[j];
+      }
+
+      result.push_back(pairs);
+    }
+  }
+
+  return result;
+}
+
+
+
+// [[Rcpp::export]]
+IntegerVector pair_search3(NumericVector x, NumericVector y) {
+  int n = x.size();
+  // append elements from y to the end of x
+  for (int i = 0; i<n; ++i) {
+    x.push_back(y[i]);
+  }
+  int N = x.size();
+  std::vector<int> index_vec(N);
+  std::iota(index_vec.begin(), index_vec.end(), 0);  // initialize with [0, 1, 2, ...]
+
+
+  // sort the index_vec based on the values in the input vector v
+  std::sort(index_vec.begin(), index_vec.end(),
+            [&](int i, int j) { return x[i] < x[j] || (x[i] == x[j] && i < j); });
+
+
+  for(int i=0; i<N; i++){
+    if(index_vec[i]>n-1){
+    index_vec[i]+=10*(n-1);}
+  }
+
+  // convert the std::vector<int> to IntegerVector before returning
+  IntegerVector sorted_indexes(index_vec.begin(), index_vec.end());
+  IntegerMatrix s(2,n*n);
+  std::sort(x.begin(),x.end());
+  int i=0;
+  IntegerVector p(0);
+  for(i=0;i<N;++i){
+    int j=i+1;
+    while(x[i]==x[j]){
+      if(abs(sorted_indexes[i]-sorted_indexes[j])>N){
+        p.push_back(sorted_indexes[i]+1);
+        p.push_back(sorted_indexes[j]-10*(n-1)-n+1);
+        p.attr("dim")=Dimension(2,int(p.length()/2));}
+        j++;}
+    }
+
+  return p;//orted_indexes;//apply_permutation(as<NumericVector>(sorted_index_vector(x)),wrap(index_vec));//sorted_indexes;
+}
+
+
+
 
 
 // [[Rcpp::export]]
@@ -129,31 +287,6 @@ double interaction_strength(NumericMatrix X, NumericVector Y, int j, int k) {
 }
 
 
-// [[Rcpp::export]]
-NumericMatrix push(IntegerMatrix M, IntegerVector new_vector) {
-  if (M.nrow() != new_vector.size()) {
-    Rcpp::stop("Dimensions of the matrix and vector do not agree.");
-  }
-
-  int nrow = M.nrow();
-  int ncol = M.ncol();
-
-  NumericMatrix new_matrix(nrow + 1, ncol);
-
-  // copy elements from the old matrix to the new matrix
-  for (int i = 0; i < nrow; ++i) {
-    for (int j = 0; j < ncol; ++j) {
-      new_matrix(i, j) = M(i, j);
-    }
-  }
-
-  // append the new vector as the last row of the new matrix
-  for (int j = 0; j < ncol; ++j) {
-    new_matrix(nrow, j) = new_vector[j];
-  }
-
-  return new_matrix;
-}
 
 
 // function to convert -1 to 0 and convert binary columns to integer values
@@ -219,6 +352,46 @@ NumericMatrix find_pair_matches(IntegerVector x0,IntegerVector z0) {
   else{NumericMatrix nothing(2, 1); return nothing;} //no matches
 }
 
+// function to find pair matches between vectors x and z
+// [[Rcpp::export]]
+NumericMatrix find_pair_matches2(IntegerVector x0,IntegerVector z0) {
+  int p = x0.size();
+  int n = z0.size();
+  NumericMatrix result(2, p*p);
+
+  NumericVector x = as<NumericVector>(x0);
+  NumericVector z = as<NumericVector>(z0);
+
+  // convert to use std lib
+  std::vector<double> new_vec_1(x.begin(), x.end());
+  std::vector<double> new_vec_2(z.begin(), z.end());
+
+  //when sorting vector, get how index is sorted
+  IntegerVector index_vector=sorted_index_vector(wrap(new_vec_1));
+
+  //sort new_vec_1, create temporary vec
+  std::sort(new_vec_1.begin(), new_vec_1.end());
+  std::vector<double> temp=new_vec_1;
+
+  // find pair matches using binary search and store the indices
+  int col = 0;
+  for (int i = 0; i < n; ++i){
+    new_vec_1=temp;
+    while(std::binary_search(new_vec_1.begin(), new_vec_1.end(), new_vec_2[i])){
+      int d=std::distance(new_vec_1.begin(), std::lower_bound(new_vec_1.begin(), new_vec_1.end(), new_vec_2[i]));
+      result(0, col) = index_vector[d] + 1;
+      result(1, col) = i + 1;
+      new_vec_1[d]-=0.001; //so that the iterator will skip this (as we already recorded the index) and still count it (diguising value)
+      col++;
+      //new_vec_1=cut_first_element(new_vec_1);
+    }
+
+  }
+
+  if(col>0){return result(_, Range(0, col - 1));} //cut unused columns
+
+  else{NumericMatrix nothing(2, 1); return nothing;} //no matches
+}
 
 // function implementing final xyz (theoretical)
 // [[Rcpp::export]]
@@ -243,7 +416,7 @@ IntegerMatrix strongest_pairs(NumericMatrix X, NumericVector Y, int M, int L, in
     for(int i=0;i < eq.ncol();++i){
 
       if(interaction_strength(X,Y,eq(_,i)[0],eq(_,i)[1])>gamma){
-      push(I,eq(_,i));
+      i++;//push(I,eq(_,i));
       }
 
     }
@@ -332,14 +505,25 @@ NumericVector go(int n, int p) {
 
 // [[Rcpp::export]]
 IntegerVector vec1(int n=0) {
-  IntegerVector vec={12,3,17,2,2,3,6,3,0,4,1,8,4,6,9,1};//seq(1,n); //funcs for testing
+  IntegerVector vec={1,2,8,3,1,1};//seq(1,n); //funcs for testing
   return vec;
 }
 
 // [[Rcpp::export]]
 IntegerVector vec2(int n=0) {
-  IntegerVector vec={2,5,16,9,1,6,5,2,1,1,4,1,2,1,0,9};//seq(1,n);
+  IntegerVector vec={2,1,1,5,6,2};//seq(1,n);
   return vec;
+}
+
+// [[Rcpp::export]]
+IntegerVector r(int n, int minValue=0, int maxValue=10) {
+  IntegerVector result(n);
+
+  for (int i = 0; i < n; ++i) {
+    result[i] = R::runif(minValue, maxValue + 1); // +1 because runif generates numbers in [a, b)
+  }
+
+  return result;
 }
 
 
