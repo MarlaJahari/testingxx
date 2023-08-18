@@ -60,6 +60,65 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// apply_permutation
+NumericVector apply_permutation(NumericVector vec, IntegerVector p);
+RcppExport SEXP _testxyz1_apply_permutation(SEXP vecSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(apply_permutation(vec, p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// combine
+NumericVector combine(NumericVector x, NumericVector y);
+RcppExport SEXP _testxyz1_combine(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(combine(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// push
+void push(IntegerMatrix M, IntegerVector new_vector);
+RcppExport SEXP _testxyz1_push(SEXP MSEXP, SEXP new_vectorSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type M(MSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type new_vector(new_vectorSEXP);
+    push(M, new_vector);
+    return R_NilValue;
+END_RCPP
+}
+// find
+List find(IntegerVector v, int k);
+RcppExport SEXP _testxyz1_find(SEXP vSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type v(vSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(find(v, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pair_search3
+IntegerVector pair_search3(NumericVector x, NumericVector y);
+RcppExport SEXP _testxyz1_pair_search3(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(pair_search3(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // generate_uniform_values
 NumericVector generate_uniform_values(int n, double a, double b);
 RcppExport SEXP _testxyz1_generate_uniform_values(SEXP nSEXP, SEXP aSEXP, SEXP bSEXP) {
@@ -112,18 +171,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// push
-NumericMatrix push(IntegerMatrix M, IntegerVector new_vector);
-RcppExport SEXP _testxyz1_push(SEXP MSEXP, SEXP new_vectorSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type new_vector(new_vectorSEXP);
-    rcpp_result_gen = Rcpp::wrap(push(M, new_vector));
-    return rcpp_result_gen;
-END_RCPP
-}
 // binaryToInt
 IntegerVector binaryToInt(NumericMatrix matrix);
 RcppExport SEXP _testxyz1_binaryToInt(SEXP matrixSEXP) {
@@ -144,6 +191,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type x0(x0SEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type z0(z0SEXP);
     rcpp_result_gen = Rcpp::wrap(find_pair_matches(x0, z0));
+    return rcpp_result_gen;
+END_RCPP
+}
+// find_pair_matches2
+NumericMatrix find_pair_matches2(IntegerVector x0, IntegerVector z0);
+RcppExport SEXP _testxyz1_find_pair_matches2(SEXP x0SEXP, SEXP z0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type x0(x0SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type z0(z0SEXP);
+    rcpp_result_gen = Rcpp::wrap(find_pair_matches2(x0, z0));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -254,19 +313,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// r
+IntegerVector r(int n, int minValue, int maxValue);
+RcppExport SEXP _testxyz1_r(SEXP nSEXP, SEXP minValueSEXP, SEXP maxValueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type minValue(minValueSEXP);
+    Rcpp::traits::input_parameter< int >::type maxValue(maxValueSEXP);
+    rcpp_result_gen = Rcpp::wrap(r(n, minValue, maxValue));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_equalpairs", (DL_FUNC) &_testxyz1_equalpairs, 5},
     {"_testxyz1_FibCpp0", (DL_FUNC) &_testxyz1_FibCpp0, 1},
     {"_testxyz1_findIndex", (DL_FUNC) &_testxyz1_findIndex, 2},
     {"_testxyz1_sorted_index_vector", (DL_FUNC) &_testxyz1_sorted_index_vector, 1},
+    {"_testxyz1_apply_permutation", (DL_FUNC) &_testxyz1_apply_permutation, 2},
+    {"_testxyz1_combine", (DL_FUNC) &_testxyz1_combine, 2},
+    {"_testxyz1_push", (DL_FUNC) &_testxyz1_push, 2},
+    {"_testxyz1_find", (DL_FUNC) &_testxyz1_find, 2},
+    {"_testxyz1_pair_search3", (DL_FUNC) &_testxyz1_pair_search3, 2},
     {"_testxyz1_generate_uniform_values", (DL_FUNC) &_testxyz1_generate_uniform_values, 3},
     {"_testxyz1_generate_random_projection", (DL_FUNC) &_testxyz1_generate_random_projection, 3},
     {"_testxyz1_binary_search_cpp", (DL_FUNC) &_testxyz1_binary_search_cpp, 2},
     {"_testxyz1_interaction_strength", (DL_FUNC) &_testxyz1_interaction_strength, 4},
-    {"_testxyz1_push", (DL_FUNC) &_testxyz1_push, 2},
     {"_testxyz1_binaryToInt", (DL_FUNC) &_testxyz1_binaryToInt, 1},
     {"_testxyz1_find_pair_matches", (DL_FUNC) &_testxyz1_find_pair_matches, 2},
+    {"_testxyz1_find_pair_matches2", (DL_FUNC) &_testxyz1_find_pair_matches2, 2},
     {"_testxyz1_strongest_pairs", (DL_FUNC) &_testxyz1_strongest_pairs, 5},
     {"_testxyz1_strongest_pairs_binary", (DL_FUNC) &_testxyz1_strongest_pairs_binary, 2},
     {"_testxyz1_cut", (DL_FUNC) &_testxyz1_cut, 1},
@@ -276,6 +353,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_go", (DL_FUNC) &_testxyz1_go, 2},
     {"_testxyz1_vec1", (DL_FUNC) &_testxyz1_vec1, 1},
     {"_testxyz1_vec2", (DL_FUNC) &_testxyz1_vec2, 1},
+    {"_testxyz1_r", (DL_FUNC) &_testxyz1_r, 3},
     {NULL, NULL, 0}
 };
 
