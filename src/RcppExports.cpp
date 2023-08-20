@@ -119,6 +119,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// pair_search4
+List pair_search4(NumericVector x, NumericVector y);
+RcppExport SEXP _testxyz1_pair_search4(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(pair_search4(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // generate_uniform_values
 NumericVector generate_uniform_values(int n, double a, double b);
 RcppExport SEXP _testxyz1_generate_uniform_values(SEXP nSEXP, SEXP aSEXP, SEXP bSEXP) {
@@ -326,6 +338,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// what
+List what(int n);
+RcppExport SEXP _testxyz1_what(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(what(n));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_equalpairs", (DL_FUNC) &_testxyz1_equalpairs, 5},
@@ -337,6 +360,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_push", (DL_FUNC) &_testxyz1_push, 2},
     {"_testxyz1_find", (DL_FUNC) &_testxyz1_find, 2},
     {"_testxyz1_pair_search3", (DL_FUNC) &_testxyz1_pair_search3, 2},
+    {"_testxyz1_pair_search4", (DL_FUNC) &_testxyz1_pair_search4, 2},
     {"_testxyz1_generate_uniform_values", (DL_FUNC) &_testxyz1_generate_uniform_values, 3},
     {"_testxyz1_generate_random_projection", (DL_FUNC) &_testxyz1_generate_random_projection, 3},
     {"_testxyz1_binary_search_cpp", (DL_FUNC) &_testxyz1_binary_search_cpp, 2},
@@ -354,6 +378,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_vec1", (DL_FUNC) &_testxyz1_vec1, 1},
     {"_testxyz1_vec2", (DL_FUNC) &_testxyz1_vec2, 1},
     {"_testxyz1_r", (DL_FUNC) &_testxyz1_r, 3},
+    {"_testxyz1_what", (DL_FUNC) &_testxyz1_what, 1},
     {NULL, NULL, 0}
 };
 
