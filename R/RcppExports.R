@@ -37,6 +37,10 @@ pair_search3 <- function(x, y) {
     .Call(`_testxyz1_pair_search3`, x, y)
 }
 
+pair_search4 <- function(x, y) {
+    .Call(`_testxyz1_pair_search4`, x, y)
+}
+
 generate_uniform_values <- function(n, a = 0.0, b = 1.0) {
     .Call(`_testxyz1_generate_uniform_values`, n, a, b)
 }
@@ -103,5 +107,9 @@ vec2 <- function(n = 0L) {
 
 r <- function(n, minValue = 0L, maxValue = 10L) {
     .Call(`_testxyz1_r`, n, minValue, maxValue)
+}
+
+what <- function(n = 10L) {
+    .Call(`_testxyz1_what`, n)
 }
 
