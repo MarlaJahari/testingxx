@@ -183,11 +183,59 @@ IntegerVector pair_search3(NumericVector x, NumericVector y) {
         j++;}
     }
 
-  return p;//orted_indexes;//apply_permutation(as<NumericVector>(sorted_index_vector(x)),wrap(index_vec));//sorted_indexes;
+  return p;//sorted_indexes;//apply_permutation(as<NumericVector>(sorted_index_vector(x)),wrap(index_vec));//sorted_indexes;
 }
 
 
+// [[Rcpp::export]]
+List pair_search4(NumericVector x, NumericVector y) {
+  int n = x.size();
+  // append elements from y to the end of x
+  for (int i = 0; i<n; ++i) {
+    x.push_back(y[i]);
+  }
+  //get size of x
+  int N = x.size();
+  //initiate list
+  List list(0);
+  //create index vector to be sorted acc to x's sort
+  std::vector<int> index_vec(N);
+  //initialize as a sequence
+  std::iota(index_vec.begin(), index_vec.end(), 0);  // initialize with [0, 1, 2, ...]
 
+
+  // sort the index_vec based on the values in the input vector v
+  std::sort(index_vec.begin(), index_vec.end(),
+            [&](int i, int j) { return x[i] < x[j] || (x[i] == x[j] && i < j); });
+
+
+  // convert the std::vector<int> to IntegerVector before returning
+  IntegerVector sorted_indexes(index_vec.begin(), index_vec.end());
+  //sort x
+  std::sort(x.begin(),x.end());
+  int i=0;
+  while(i<N){
+    //initialize m to get split index
+    int m=0;
+    //start by checking consecutive elements
+    int j=i+1;
+    while(x[i]==x[j]){
+      if(sorted_indexes[j]>=n&&sorted_indexes[j-1]<n){m=j;}//if consequent values come from different vectors, get the index to split
+        j++;
+        }
+      Rcpp::List v(0);
+
+    //if there are repetitions & they come from different vectors, split and push to different elements of list,
+    //append list to main list
+
+      if(((j-i)>1)&&m>0){
+        v.push_back(sorted_indexes[Rcpp::Range(i,m-1)]+1);// indexes from first vector
+        v.push_back((sorted_indexes[Rcpp::Range(m,j-1)])-n+1);//indexes from second vector
+        list.push_back(v);
+        }
+      i=j;}// jump to next (non-repeated) value
+
+     return list;}
 
 
 // [[Rcpp::export]]
@@ -274,9 +322,9 @@ double interaction_strength(NumericMatrix X, NumericVector Y, int j, int k) {
     }
   }
 
-  // Calculate the interaction strength gamma_jk
+  // calculate the interaction strength gamma_jk
   for (int i = 0; i < n; ++i) {
-    // Check if Yi = Xij * Xik
+    // check if Yi = Xij * Xik
     if (Y[i] == X(i, j) * X(i, k)) {
       sum += 1.0;
     }
@@ -505,13 +553,13 @@ NumericVector go(int n, int p) {
 
 // [[Rcpp::export]]
 IntegerVector vec1(int n=0) {
-  IntegerVector vec={1,2,8,3,1,1};//seq(1,n); //funcs for testing
+  IntegerVector vec={1,2,8,3};//seq(1,n); //funcs for testing
   return vec;
 }
 
 // [[Rcpp::export]]
 IntegerVector vec2(int n=0) {
-  IntegerVector vec={2,1,1,5,6,2};//seq(1,n);
+  IntegerVector vec={2,1,1,5};//seq(1,n);
   return vec;
 }
 
@@ -526,7 +574,13 @@ IntegerVector r(int n, int minValue=0, int maxValue=10) {
   return result;
 }
 
-
-
+// [[Rcpp::export]]
+List what(int n=10){
+  List v(2);
+  v[0]=r(2);
+  v[1]=r(2);
+  v.push_back(v);
+  return v;
+}
 
 
