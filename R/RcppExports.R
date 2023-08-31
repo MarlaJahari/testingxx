@@ -13,6 +13,10 @@ findIndex <- function(array, value) {
     .Call(`_testxyz1_findIndex`, array, value)
 }
 
+binaryToInt <- function(matrix) {
+    .Call(`_testxyz1_binaryToInt`, matrix)
+}
+
 sorted_index_vector <- function(v) {
     .Call(`_testxyz1_sorted_index_vector`, v)
 }
@@ -37,8 +41,28 @@ pair_search3 <- function(x, y) {
     .Call(`_testxyz1_pair_search3`, x, y)
 }
 
+test2 <- function(x, sorted_indexes) {
+    .Call(`_testxyz1_test2`, x, sorted_indexes)
+}
+
 pair_search4 <- function(x, y) {
     .Call(`_testxyz1_pair_search4`, x, y)
+}
+
+normalizeL1 <- function(vec) {
+    .Call(`_testxyz1_normalizeL1`, vec)
+}
+
+transformY <- function(vec) {
+    .Call(`_testxyz1_transformY`, vec)
+}
+
+uniformSampling <- function(X, Y, p, k) {
+    .Call(`_testxyz1_uniformSampling`, X, Y, p, k)
+}
+
+weightedSampling <- function(X, Y, p, k) {
+    .Call(`_testxyz1_weightedSampling`, X, Y, p, k)
 }
 
 generate_uniform_values <- function(n, a = 0.0, b = 1.0) {
@@ -55,10 +79,6 @@ binary_search_cpp <- function(arr, target) {
 
 interaction_strength <- function(X, Y, j, k) {
     .Call(`_testxyz1_interaction_strength`, X, Y, j, k)
-}
-
-binaryToInt <- function(matrix) {
-    .Call(`_testxyz1_binaryToInt`, matrix)
 }
 
 find_pair_matches <- function(x0, z0) {
@@ -109,7 +129,19 @@ r <- function(n, minValue = 0L, maxValue = 10L) {
     .Call(`_testxyz1_r`, n, minValue, maxValue)
 }
 
+rs <- function(n, minValue = 0L, maxValue = 10L) {
+    .Call(`_testxyz1_rs`, n, minValue, maxValue)
+}
+
 what <- function(n = 10L) {
     .Call(`_testxyz1_what`, n)
+}
+
+getPermutationIndex <- function(x) {
+    .Call(`_testxyz1_getPermutationIndex`, x)
+}
+
+makeZ <- function(X, Y) {
+    .Call(`_testxyz1_makeZ`, X, Y)
 }
 
