@@ -14,6 +14,27 @@ IntegerVector findIndex(NumericVector array, double value) {
   return indices;
 }
 
+// function to convert -1 to 0 and convert binary columns to integer values
+// [[Rcpp::export]]
+IntegerVector binaryToInt(NumericMatrix matrix) {
+  int n = matrix.nrow();
+  int p = matrix.ncol();
+  IntegerVector result(p);
+
+  for (int col = 0; col < p; col++) {
+    int decimalValue = 0;
+    for (int row = 0; row < n; row++) {
+      if (matrix(row, col) == -1) {
+        matrix(row, col) = 0; // Convert -1 to 0
+      }
+      decimalValue += matrix(row, col) * pow(2, n - row - 1);
+    }
+    result[col] = decimalValue;
+  }
+
+  return result;
+}
+
 // function to return the sorted index vector for an unsorted NumericVector
 // [[Rcpp::export]]
 IntegerVector sorted_index_vector(NumericVector v) {
@@ -186,6 +207,38 @@ IntegerVector pair_search3(NumericVector x, NumericVector y) {
   return p;//sorted_indexes;//apply_permutation(as<NumericVector>(sorted_index_vector(x)),wrap(index_vec));//sorted_indexes;
 }
 
+// [[Rcpp::export]]
+List test2(NumericVector x, IntegerVector sorted_indexes) {
+
+  int N = x.size();
+  int n=int(N/2);
+  //initiate list
+  List list(0);
+
+  int i=0;
+  while(i<N){
+    //initialize m to get split index
+    int m=0;
+    //start by checking consecutive elements
+    int j=i+1;
+    while(x[i]==x[j]){
+      if(sorted_indexes[j]>=n&&sorted_indexes[j-1]<n){m=j;}//if consequent values come from different vectors, get the index to split
+      j++;
+    }
+    Rcpp::List v(0);
+
+    //if there are repetitions & they come from different vectors, split and push to different elements of list,
+    //append list to main list
+
+    if(((j-i)>1)&&m>0){
+      v.push_back(sorted_indexes[Rcpp::Range(i,m-1)]+1);// indexes from first vector
+      v.push_back((sorted_indexes[Rcpp::Range(m,j-1)])-n+1);//indexes from second vector
+      list.push_back(v);
+    }
+    i=j;}// jump to next (non-repeated) value
+
+  return list;}
+
 
 // [[Rcpp::export]]
 List pair_search4(NumericVector x, NumericVector y) {
@@ -199,18 +252,18 @@ List pair_search4(NumericVector x, NumericVector y) {
   //initiate list
   List list(0);
   //create index vector to be sorted acc to x's sort
-  std::vector<int> index_vec(N);
+  //std::vector<int> index_vec(N);
   //initialize as a sequence
-  std::iota(index_vec.begin(), index_vec.end(), 0);  // initialize with [0, 1, 2, ...]
+  //std::iota(index_vec.begin(), index_vec.end(), 0);  // initialize with [0, 1, 2, ...]
 
 
   // sort the index_vec based on the values in the input vector v
-  std::sort(index_vec.begin(), index_vec.end(),
-            [&](int i, int j) { return x[i] < x[j] || (x[i] == x[j] && i < j); });
+  //std::sort(index_vec.begin(), index_vec.end(),
+  //          [&](int i, int j) { return x[i] < x[j] || (x[i] == x[j] && i < j); });
 
 
   // convert the std::vector<int> to IntegerVector before returning
-  IntegerVector sorted_indexes(index_vec.begin(), index_vec.end());
+  IntegerVector sorted_indexes=sorted_index_vector(x);//(index_vec.begin(), index_vec.end());
   //sort x
   std::sort(x.begin(),x.end());
   int i=0;
@@ -236,6 +289,111 @@ List pair_search4(NumericVector x, NumericVector y) {
       i=j;}// jump to next (non-repeated) value
 
      return list;}
+
+
+// normalize a vector to have an L1 norm of 1
+// [[Rcpp::export]]
+NumericVector normalizeL1(NumericVector vec) {
+  double sum=0.0;
+  for (int i=0; i<vec.size(); ++i) {
+    sum += std::abs(vec[i]);
+    vec[i]=std::abs(vec[i]);
+  }
+  if (sum==0.0) {
+    return vec; // no division by zero
+  }
+  return vec/sum;
+}
+
+// [[Rcpp::export]]
+NumericVector transformY(NumericVector vec) {
+  for (int i = 0; i < vec.size(); ++i) {
+    if (vec[i] <= 0) { vec[i] = 0;}
+    else if(vec[i]==0){double ran=R::runif(0,1);vec[i] = (ran<0.5) ? 0 : 1;}
+    else {  vec[i] = 1;}
+  }
+  return vec;
+}
+
+//  perform uniform sampling from matrices X and Z, for the binary case
+// [[Rcpp::export]]
+List uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
+  int n = X.nrow(); // assuming the number of rows is equal to the size of Y
+  int p1=X.ncol();
+  NumericMatrix Z(n,p1);
+
+  for (int i=0; i<n; ++i) {
+    for (int l=0; l < p1;++l) {
+      Z(i,l) = Y[i]*X(i, l);
+    }
+  }
+
+  // normalize weights to form a probability distribution
+  //NumericVector normalizedWeights = normalizeL1(Y);
+
+  List result; // to store results
+
+  for (int j = 0; j < k; ++j) {
+    // generate p weighted random indexes from 1 to n
+    IntegerVector sampledIndices = Rcpp::sample(n, p, false);
+    std::sort(sampledIndices.begin(), sampledIndices.end());
+    // initialize the result matrices for sampled rows
+    NumericMatrix sampledX(p, X.ncol());
+    NumericMatrix sampledZ(p, Z.ncol());
+
+    // populate sampled submatrices using sampled indices
+    for (int i = 0; i < p; ++i) {
+      sampledX.row(i) = X.row(sampledIndices[i] - 1); // Adjust for 0-based indexing
+      sampledZ.row(i) = Z.row(sampledIndices[i] - 1);
+    }
+
+    // append sampled submatrices to the result list
+    result.push_back(pair_search4(as<NumericVector>(binaryToInt(sampledZ)),as<NumericVector>(binaryToInt(sampledX))));
+  }
+
+  return result;
+}
+
+
+
+//  perform weighted sampling from matrices X and Z
+// [[Rcpp::export]]
+List weightedSampling(NumericMatrix X, NumericVector Y, int p, int k) {
+  int n = X.nrow(); // assuming the number of rows is equal to the size of Y
+  int p1=X.ncol();
+  NumericMatrix Z(n,p1);
+
+  for (int i=0; i<n; ++i) {
+    for (int l=0; l < p1;++l) {
+      Z(i,l) = transformY(Y)[i]*X(i, l);
+    }
+  }
+
+  // normalize weights to form a probability distribution
+  NumericVector normalizedWeights = normalizeL1(Y);
+
+  List result; // to store results
+
+  for (int j = 0; j < k; ++j) {
+    // generate p weighted random indexes from 1 to n
+    IntegerVector sampledIndices = Rcpp::sample(n, p, false, normalizedWeights);
+
+    // initialize the result matrices for sampled rows
+    NumericMatrix sampledX(p, X.ncol());
+    NumericMatrix sampledZ(p, Z.ncol());
+
+    // populate sampled submatrices using sampled indices
+    for (int i = 0; i < p; ++i) {
+      sampledX.row(i) = X.row(sampledIndices[i] - 1); // Adjust for 0-based indexing
+      sampledZ.row(i) = Z.row(sampledIndices[i] - 1);
+    }
+
+    // append sampled submatrices to the result list
+    result.push_back(pair_search4(as<NumericVector>(binaryToInt(sampledX)),as<NumericVector>(sampledZ)));
+  }
+
+  return result;
+}
 
 
 // [[Rcpp::export]]
@@ -332,30 +490,6 @@ double interaction_strength(NumericMatrix X, NumericVector Y, int j, int k) {
 
   // retrn it
   return sum / n;
-}
-
-
-
-
-// function to convert -1 to 0 and convert binary columns to integer values
-// [[Rcpp::export]]
-IntegerVector binaryToInt(NumericMatrix matrix) {
-  int n = matrix.nrow();
-  int p = matrix.ncol();
-  IntegerVector result(p);
-
-  for (int col = 0; col < p; col++) {
-    int decimalValue = 0;
-    for (int row = 0; row < n; row++) {
-      if (matrix(row, col) == -1) {
-        matrix(row, col) = 0; // Convert -1 to 0
-      }
-      decimalValue += matrix(row, col) * pow(2, n - row - 1);
-    }
-    result[col] = decimalValue;
-  }
-
-  return result;
 }
 
 
@@ -564,7 +698,17 @@ IntegerVector vec2(int n=0) {
 }
 
 // [[Rcpp::export]]
-IntegerVector r(int n, int minValue=0, int maxValue=10) {
+NumericVector r(int n, int minValue=0, int maxValue=10) {
+  NumericVector result(n);
+
+  for (int i = 0; i < n; ++i) {
+    result[i] = R::runif(minValue, maxValue + 1); // +1 because runif generates numbers in [a, b)
+  }
+
+  return result;
+}
+// [[Rcpp::export]]
+IntegerVector rs(int n, int minValue=0, int maxValue=10) {
   IntegerVector result(n);
 
   for (int i = 0; i < n; ++i) {
@@ -582,5 +726,28 @@ List what(int n=10){
   v.push_back(v);
   return v;
 }
+// [[Rcpp::export]]
+IntegerVector getPermutationIndex(NumericVector x) {
+  IntegerVector sorted_indices = seq_along(x);
+  std::sort(sorted_indices.begin(), sorted_indices.end(),
+            [&](int i, int j) { return x[i] < x[j]; });
+  return sorted_indices;
+}
+
+//[[Rcpp::export]]
+IntegerMatrix makeZ(IntegerMatrix X, IntegerVector Y){
+ int n = X.nrow();
+ int p = X.ncol();
+ IntegerMatrix Z(n,p);
+ if(n!=Y.size()){
+   stop("Inconsistency in Dimensions, come back later when you attain consistency");
+  }
+ for (int i=0; i<n; ++i) {
+  for (int l=0; l < p;++l) {
+    Z(i,l) = Y[i]*X(i, l);
+  }
+ }
+ return Z;}
+
 
 
