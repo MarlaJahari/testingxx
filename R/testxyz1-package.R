@@ -64,31 +64,31 @@ getunion<-function(x)
  }
   return(mat1)}
 
-# Transpose the matrix to have points in rows instead of columns
-transposed_matrix <- t(mat1[,-1])
+# transpose the matrix to have points in rows instead of columns
+transposed_matrix<- t(mat1[,-1])
 
-# Calculate the size of the plotting character based on the number of points
-num_points <- ncol(transposed_matrix)
-pch_size <- 10 + num_points * 5
+# calculate the size of the plotting character based on the number of points
+num_points<- ncol(transposed_matrix)
+pch_size<- 10 +num_points*5
 
-# Calculate the alpha transparency based on the number of points
-alpha_value <- 1 / (num_points + 1)  # Increase divisor for more transparency
+# talculate the alpha transparency based on the number of points
+alpha_value<- 1/(num_points+1)  # Increase divisor for more transparency
 
-# Plot the points with varying sizes and alpha transparency
-plot(transposed_matrix, type = "p", pch = 19, col = rgb(0, 0, 1, alpha = alpha_value),
-     xlim = c(min(transposed_matrix[, 1]), max(transposed_matrix[, 1])),
-     ylim = c(min(transposed_matrix[, 2]), max(transposed_matrix[, 2])),
-     xlab = "X Coordinate", ylab = "Y Coordinate", main = "Plot of Points")
+# plot the points with varying sizes and alpha transparency
+plot(transposed_matrix, type = "p", pch = 19, col = rgb(0, 0, 1, alpha= alpha_value),
+     xlim= c(min(transposed_matrix[, 1]), max(transposed_matrix[, 1])),
+     ylim= c(min(transposed_matrix[, 2]), max(transposed_matrix[, 2])),
+     xlab= "X Coordinate", ylab = "Y Coordinate", main = "Plot of Points")
 
-# Add labels to the points
+# add labels to the points
 text(transposed_matrix[, 1], transposed_matrix[, 2], labels = 1:ncol(transposed_matrix), pos = 3)
 
 
-# Create two example matrices with the same number of rows
+# create two example matrices with the same number of rows
 mat1 <- matrix(nrow = 2)
 mat2 <- matrix(7:12, ncol = 2)
 
-# Concatenate the matrices by columns
+# concatenate the matrices by columns
 #concatenated_mat <- cbind(mat1, mat2)
 
 # Print the concatenated matrix
