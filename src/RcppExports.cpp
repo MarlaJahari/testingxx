@@ -11,21 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// equalpairs
-IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs);
-RcppExport SEXP _testxyz1_equalpairs(SEXP uSEXP, SEXP vSEXP, SEXP ouSEXP, SEXP ovSEXP, SEXP max_number_of_pairsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type u(uSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type v(vSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type ou(ouSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type ov(ovSEXP);
-    Rcpp::traits::input_parameter< int >::type max_number_of_pairs(max_number_of_pairsSEXP);
-    rcpp_result_gen = Rcpp::wrap(equalpairs(u, v, ou, ov, max_number_of_pairs));
-    return rcpp_result_gen;
-END_RCPP
-}
 // FibCpp0
 std::vector<int> FibCpp0(int n);
 RcppExport SEXP _testxyz1_FibCpp0(SEXP nSEXP) {
@@ -130,15 +115,89 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// test2
-List test2(NumericVector x, IntegerVector sorted_indexes);
-RcppExport SEXP _testxyz1_test2(SEXP xSEXP, SEXP sorted_indexesSEXP) {
+// findindexit
+int findindexit(IntegerVector vec, double n);
+RcppExport SEXP _testxyz1_findindexit(SEXP vecSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(findindexit(vec, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// binarySearchIndex
+int binarySearchIndex(IntegerVector v, int n);
+RcppExport SEXP _testxyz1_binarySearchIndex(SEXP vSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type v(vSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(binarySearchIndex(v, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pair_search6
+List pair_search6(NumericVector x, IntegerVector sorted_indexes);
+RcppExport SEXP _testxyz1_pair_search6(SEXP xSEXP, SEXP sorted_indexesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type sorted_indexes(sorted_indexesSEXP);
-    rcpp_result_gen = Rcpp::wrap(test2(x, sorted_indexes));
+    rcpp_result_gen = Rcpp::wrap(pair_search6(x, sorted_indexes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pair_search7
+List pair_search7(NumericVector x, IntegerVector sorted_indexes);
+RcppExport SEXP _testxyz1_pair_search7(SEXP xSEXP, SEXP sorted_indexesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type sorted_indexes(sorted_indexesSEXP);
+    rcpp_result_gen = Rcpp::wrap(pair_search7(x, sorted_indexes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// group
+List group(IntegerVector list, IntegerVector sorted, int n1);
+RcppExport SEXP _testxyz1_group(SEXP listSEXP, SEXP sortedSEXP, SEXP n1SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type list(listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type sorted(sortedSEXP);
+    Rcpp::traits::input_parameter< int >::type n1(n1SEXP);
+    rcpp_result_gen = Rcpp::wrap(group(list, sorted, n1));
+    return rcpp_result_gen;
+END_RCPP
+}
+// splitVectors
+List splitVectors(ListOf<IntegerVector> inputList, int n);
+RcppExport SEXP _testxyz1_splitVectors(SEXP inputListSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< ListOf<IntegerVector> >::type inputList(inputListSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(splitVectors(inputList, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// group2
+List group2(IntegerVector list, IntegerVector sorted, int n1);
+RcppExport SEXP _testxyz1_group2(SEXP listSEXP, SEXP sortedSEXP, SEXP n1SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type list(listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type sorted(sortedSEXP);
+    Rcpp::traits::input_parameter< int >::type n1(n1SEXP);
+    rcpp_result_gen = Rcpp::wrap(group2(list, sorted, n1));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -151,6 +210,76 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(pair_search4(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test4
+List test4(NumericVector x, IntegerVector sorted_indexes);
+RcppExport SEXP _testxyz1_test4(SEXP xSEXP, SEXP sorted_indexesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type sorted_indexes(sorted_indexesSEXP);
+    rcpp_result_gen = Rcpp::wrap(test4(x, sorted_indexes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// expandGrid
+IntegerMatrix expandGrid(IntegerVector vec1, IntegerVector vec2);
+RcppExport SEXP _testxyz1_expandGrid(SEXP vec1SEXP, SEXP vec2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type vec1(vec1SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type vec2(vec2SEXP);
+    rcpp_result_gen = Rcpp::wrap(expandGrid(vec1, vec2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pair_search8
+IntegerMatrix pair_search8(NumericVector x, NumericVector y);
+RcppExport SEXP _testxyz1_pair_search8(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(pair_search8(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test3
+IntegerMatrix test3(NumericVector x, IntegerVector sorted_indexes);
+RcppExport SEXP _testxyz1_test3(SEXP xSEXP, SEXP sorted_indexesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type sorted_indexes(sorted_indexesSEXP);
+    rcpp_result_gen = Rcpp::wrap(test3(x, sorted_indexes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cantor_map
+NumericVector cantor_map(NumericMatrix pairs);
+RcppExport SEXP _testxyz1_cantor_map(SEXP pairsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type pairs(pairsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cantor_map(pairs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// inverse_cantor_map
+NumericMatrix inverse_cantor_map(NumericVector values);
+RcppExport SEXP _testxyz1_inverse_cantor_map(SEXP valuesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type values(valuesSEXP);
+    rcpp_result_gen = Rcpp::wrap(inverse_cantor_map(values));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -201,6 +330,55 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type p(pSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     rcpp_result_gen = Rcpp::wrap(weightedSampling(X, Y, p, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getunique
+NumericMatrix getunique(NumericMatrix combined);
+RcppExport SEXP _testxyz1_getunique(SEXP combinedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type combined(combinedSEXP);
+    rcpp_result_gen = Rcpp::wrap(getunique(combined));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hadamard
+NumericVector hadamard(NumericVector x, NumericVector y);
+RcppExport SEXP _testxyz1_hadamard(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(hadamard(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// inner_product
+double inner_product(NumericVector x, NumericVector y);
+RcppExport SEXP _testxyz1_inner_product(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(inner_product(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// filter
+NumericMatrix filter(NumericMatrix pairs, NumericMatrix X, NumericVector Y, double threshold);
+RcppExport SEXP _testxyz1_filter(SEXP pairsSEXP, SEXP XSEXP, SEXP YSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type pairs(pairsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(filter(pairs, X, Y, threshold));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -365,28 +543,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// vec1
-IntegerVector vec1(int n);
-RcppExport SEXP _testxyz1_vec1(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(vec1(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// vec2
-IntegerVector vec2(int n);
-RcppExport SEXP _testxyz1_vec2(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(vec2(n));
-    return rcpp_result_gen;
-END_RCPP
-}
 // r
 NumericVector r(int n, int minValue, int maxValue);
 RcppExport SEXP _testxyz1_r(SEXP nSEXP, SEXP minValueSEXP, SEXP maxValueSEXP) {
@@ -413,28 +569,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// what
-List what(int n);
-RcppExport SEXP _testxyz1_what(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(what(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// getPermutationIndex
-IntegerVector getPermutationIndex(NumericVector x);
-RcppExport SEXP _testxyz1_getPermutationIndex(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(getPermutationIndex(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // makeZ
 IntegerMatrix makeZ(IntegerMatrix X, IntegerVector Y);
 RcppExport SEXP _testxyz1_makeZ(SEXP XSEXP, SEXP YSEXP) {
@@ -447,9 +581,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// equalpairs
+IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs);
+RcppExport SEXP _testxyz1_equalpairs(SEXP uSEXP, SEXP vSEXP, SEXP ouSEXP, SEXP ovSEXP, SEXP max_number_of_pairsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type u(uSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type v(vSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type ou(ouSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type ov(ovSEXP);
+    Rcpp::traits::input_parameter< int >::type max_number_of_pairs(max_number_of_pairsSEXP);
+    rcpp_result_gen = Rcpp::wrap(equalpairs(u, v, ou, ov, max_number_of_pairs));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_testxyz1_equalpairs", (DL_FUNC) &_testxyz1_equalpairs, 5},
     {"_testxyz1_FibCpp0", (DL_FUNC) &_testxyz1_FibCpp0, 1},
     {"_testxyz1_findIndex", (DL_FUNC) &_testxyz1_findIndex, 2},
     {"_testxyz1_binaryToInt", (DL_FUNC) &_testxyz1_binaryToInt, 1},
@@ -459,12 +607,28 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_push", (DL_FUNC) &_testxyz1_push, 2},
     {"_testxyz1_find", (DL_FUNC) &_testxyz1_find, 2},
     {"_testxyz1_pair_search3", (DL_FUNC) &_testxyz1_pair_search3, 2},
-    {"_testxyz1_test2", (DL_FUNC) &_testxyz1_test2, 2},
+    {"_testxyz1_findindexit", (DL_FUNC) &_testxyz1_findindexit, 2},
+    {"_testxyz1_binarySearchIndex", (DL_FUNC) &_testxyz1_binarySearchIndex, 2},
+    {"_testxyz1_pair_search6", (DL_FUNC) &_testxyz1_pair_search6, 2},
+    {"_testxyz1_pair_search7", (DL_FUNC) &_testxyz1_pair_search7, 2},
+    {"_testxyz1_group", (DL_FUNC) &_testxyz1_group, 3},
+    {"_testxyz1_splitVectors", (DL_FUNC) &_testxyz1_splitVectors, 2},
+    {"_testxyz1_group2", (DL_FUNC) &_testxyz1_group2, 3},
     {"_testxyz1_pair_search4", (DL_FUNC) &_testxyz1_pair_search4, 2},
+    {"_testxyz1_test4", (DL_FUNC) &_testxyz1_test4, 2},
+    {"_testxyz1_expandGrid", (DL_FUNC) &_testxyz1_expandGrid, 2},
+    {"_testxyz1_pair_search8", (DL_FUNC) &_testxyz1_pair_search8, 2},
+    {"_testxyz1_test3", (DL_FUNC) &_testxyz1_test3, 2},
+    {"_testxyz1_cantor_map", (DL_FUNC) &_testxyz1_cantor_map, 1},
+    {"_testxyz1_inverse_cantor_map", (DL_FUNC) &_testxyz1_inverse_cantor_map, 1},
     {"_testxyz1_normalizeL1", (DL_FUNC) &_testxyz1_normalizeL1, 1},
     {"_testxyz1_transformY", (DL_FUNC) &_testxyz1_transformY, 1},
     {"_testxyz1_uniformSampling", (DL_FUNC) &_testxyz1_uniformSampling, 4},
     {"_testxyz1_weightedSampling", (DL_FUNC) &_testxyz1_weightedSampling, 4},
+    {"_testxyz1_getunique", (DL_FUNC) &_testxyz1_getunique, 1},
+    {"_testxyz1_hadamard", (DL_FUNC) &_testxyz1_hadamard, 2},
+    {"_testxyz1_inner_product", (DL_FUNC) &_testxyz1_inner_product, 2},
+    {"_testxyz1_filter", (DL_FUNC) &_testxyz1_filter, 4},
     {"_testxyz1_generate_uniform_values", (DL_FUNC) &_testxyz1_generate_uniform_values, 3},
     {"_testxyz1_generate_random_projection", (DL_FUNC) &_testxyz1_generate_random_projection, 3},
     {"_testxyz1_binary_search_cpp", (DL_FUNC) &_testxyz1_binary_search_cpp, 2},
@@ -478,13 +642,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_random_binary_matrix", (DL_FUNC) &_testxyz1_random_binary_matrix, 2},
     {"_testxyz1_random_binary_vector", (DL_FUNC) &_testxyz1_random_binary_vector, 1},
     {"_testxyz1_go", (DL_FUNC) &_testxyz1_go, 2},
-    {"_testxyz1_vec1", (DL_FUNC) &_testxyz1_vec1, 1},
-    {"_testxyz1_vec2", (DL_FUNC) &_testxyz1_vec2, 1},
     {"_testxyz1_r", (DL_FUNC) &_testxyz1_r, 3},
     {"_testxyz1_rs", (DL_FUNC) &_testxyz1_rs, 3},
-    {"_testxyz1_what", (DL_FUNC) &_testxyz1_what, 1},
-    {"_testxyz1_getPermutationIndex", (DL_FUNC) &_testxyz1_getPermutationIndex, 1},
     {"_testxyz1_makeZ", (DL_FUNC) &_testxyz1_makeZ, 2},
+    {"_testxyz1_equalpairs", (DL_FUNC) &_testxyz1_equalpairs, 5},
     {NULL, NULL, 0}
 };
 
