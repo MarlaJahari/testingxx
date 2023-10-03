@@ -53,8 +53,8 @@ pair_search7 <- function(x, sorted_indexes) {
     .Call(`_testxyz1_pair_search7`, x, sorted_indexes)
 }
 
-group <- function(list, sorted, n1) {
-    .Call(`_testxyz1_group`, list, sorted, n1)
+groupt <- function(list, sorted, n1) {
+    .Call(`_testxyz1_groupt`, list, sorted, n1)
 }
 
 splitVectors <- function(inputList, n) {
@@ -191,5 +191,21 @@ makeZ <- function(X, Y) {
 
 equalpairs <- function(u, v, ou, ov, max_number_of_pairs) {
     .Call(`_testxyz1_equalpairs`, u, v, ou, ov, max_number_of_pairs)
+}
+
+equalpairs2 <- function(u, v, ou, ov, max_number_of_pairs) {
+    .Call(`_testxyz1_equalpairs2`, u, v, ou, ov, max_number_of_pairs)
+}
+
+expandGrido <- function(vec1, vec2) {
+    .Call(`_testxyz1_expandGrido`, vec1, vec2)
+}
+
+pairsearch9 <- function(a_positions, b_positions, a_sorted_values, b_sorted_values) {
+    .Call(`_testxyz1_pairsearch9`, a_positions, b_positions, a_sorted_values, b_sorted_values)
+}
+
+pairsearch10 <- function(a_positions, b_positions, a_sorted_values, b_sorted_values) {
+    .Call(`_testxyz1_pairsearch10`, a_positions, b_positions, a_sorted_values, b_sorted_values)
 }
 

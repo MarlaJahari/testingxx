@@ -52,6 +52,26 @@ getpairs2 <- function(p) {
   return(mat)
 }
 
+getpairs2 <- function(p) {
+  n<-length(p)
+  #total_combinations<-sum(sapply(p, function(x) length(x[[1]]) * length(x[[2]])))
+
+  mat<-matrix(0,0,2)
+  #idx<-1
+  i<-1
+  while(i<(n)){
+    #pair<-p[[i]]
+    #len_1<-length(pair[[1]])
+    #len_2<-length(pair[[2]])
+
+    grid<-expand.grid(p[[i]],p[[i+1]])
+    mat<-rbind(mat,as.matrix(grid))
+    i<-i+2
+    }
+
+  return(mat)
+}
+
 getpairs3 <- function(p) {
   grids <- lapply(p, function(x) expand.grid(x[[1]], x[[2]]))
   non_empty_grids <- Filter(function(x) !is.null(x), grids)
