@@ -1183,15 +1183,15 @@ IntegerMatrix equalpairs2(NumericVector u, NumericVector v, IntegerVector ou, In
 
 // [[Rcpp::export]]
 IntegerMatrix expandGrido(IntegerVector vec1, IntegerVector vec2) {
-  int n = vec1.size();
-  int m = vec2.size();
+  int n= vec1.size();
+  int m= vec2.size();
 
-  IntegerMatrix result(2, n * m);
+  IntegerMatrix result(2,n* m);
 
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < m; ++j) {
-      result(0, i * m + j) = vec1[i];
-      result(1, i * m + j) = vec2[j];
+  for (int i= 0; i< n; ++i) {
+    for (int j= 0; j< m; ++j) {
+      result(0, i * m +j) = vec1[i];
+      result(1, i * m +j) = vec2[j];
     }
   }
 
@@ -1202,28 +1202,28 @@ IntegerMatrix expandGrido(IntegerVector vec1, IntegerVector vec2) {
 
 
 // [[Rcpp::export]]
-List pairsearch9(IntegerVector a_positions, IntegerVector b_positions,
+List pairsearch10(IntegerVector a_positions, IntegerVector b_positions,
                                     IntegerVector a_sorted_values, IntegerVector b_sorted_values) {
-  int n = a_positions.size();
-  int m = b_positions.size();
+  int n= a_positions.size();
+  int m= b_positions.size();
   List list(n);
-  int a_pos = 0, b_pos = 0, cur = 0;
-  while (a_pos < n && b_pos < m) {
-    double a_val = a_sorted_values[a_pos];
-    double b_val = b_sorted_values[b_pos];
+  int a=0, b=0, z= 0;
+  while (a < n && b < m) {
+    double a_val= a_sorted_values[a];
+    double b_val= b_sorted_values[b];
 
     if (a_val < b_val) {
-      a_pos++;
+      a++;
       continue;
     }
 
     if (a_val > b_val) {
-      b_pos++;
+      b++;
       continue;
     }
 
-    int a_end = n;
-    for (int i = a_pos + 1; i < n; i++) {
+    int a_end= n;
+    for (int i= a+1; i < n; i++) {
       if (a_sorted_values[i] != a_val) {
         a_end = i;
         break;
@@ -1231,49 +1231,48 @@ List pairsearch9(IntegerVector a_positions, IntegerVector b_positions,
     }
 
     int b_end = m;
-    for (int i = b_pos + 1; i < m; i++) {
+    for (int i = b+ 1; i < m; i++) {
       if (b_sorted_values[i] != b_val) {
         b_end = i;
         break;
       }
     }
-    if((a_pos<=a_end-1) && (b_pos<=b_end-1)){
-    list[cur]=expandGrido(a_positions[Range(a_pos,a_end-1)],b_positions[Range(b_pos,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
+    if((a<=a_end-1) && (b<=b_end-1)){
+    list[z]=expandGrido(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
     }
-    cur++;
+    z++;
 
-    a_pos = a_end;
-    b_pos = b_end;
+    a = a_end;
+    b = b_end;
   }
 
-  return list[Range(0, cur - 1)];
+  return list[Range(0, z- 1)];
 }
 
 
 // [[Rcpp::export]]
-List pairsearch10(IntegerVector a_positions, IntegerVector b_positions,
-                           IntegerVector a_sorted_values, IntegerVector b_sorted_values) {
-  int n = a_positions.size();
-  int m = b_positions.size();
-  IntegerMatrix result(n, 4);
+List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
+                 IntegerVector a_sorted_values, IntegerVector b_sorted_values) {
+  int n= a_positions.size();
+  int m= b_positions.size();
   List list(n);
-  int a_pos = 0, b_pos = 0, cur = 0;
-  while (a_pos < n && b_pos < m) {
-    double a_val = a_sorted_values[a_pos];
-    double b_val = b_sorted_values[b_pos];
+  int a=0, b=0, z= 0;
+  while (a < n && b < m) {
+    double a_val= a_sorted_values[a];
+    double b_val= b_sorted_values[b];
 
     if (a_val < b_val) {
-      a_pos++;
+      a++;
       continue;
     }
 
     if (a_val > b_val) {
-      b_pos++;
+      b++;
       continue;
     }
 
-    int a_end = n;
-    for (int i = a_pos + 1; i < n; i++) {
+    int a_end= n;
+    for (int i= a+1; i < n; i++) {
       if (a_sorted_values[i] != a_val) {
         a_end = i;
         break;
@@ -1281,21 +1280,22 @@ List pairsearch10(IntegerVector a_positions, IntegerVector b_positions,
     }
 
     int b_end = m;
-    for (int i = b_pos + 1; i < m; i++) {
+    for (int i = b+ 1; i < m; i++) {
       if (b_sorted_values[i] != b_val) {
         b_end = i;
         break;
       }
     }
+    if((a<=a_end-1) && (b<=b_end-1)){
+      list[z]=expandGrid(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
+    }
+    z++;
 
-    list[cur]=expandGrid(a_positions[Range(a_pos,a_end-1)],b_positions[Range(b_pos,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
-    cur++;
-
-    a_pos = a_end;
-    b_pos = b_end;
+    a = a_end;
+    b = b_end;
   }
 
-  return list[Range(0, cur - 1)];//result(Range(0, cur - 1), _);
+  return list[Range(0, z- 1)];
 }
 
 
