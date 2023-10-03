@@ -306,34 +306,36 @@ List pair_search7(NumericVector x, IntegerVector sorted_indexes) {
 
 
 
+
+
+
 //[[Rcpp::export]]
-List group(IntegerVector list, IntegerVector sorted, int n1) {
+List groupt(IntegerVector list, IntegerVector sorted, int n1) {
   int n = list.size();
-  //std::vector<std::vector<int>> results;
   int result_start = 0;
   List list0(0);
-  for (int i=0; i< n; i++) {
+  for (int i=0; i< n-1; i++) {
 
-    if (list[i]!=list[i+1]) {
+    if ((list[i]!=list[i+1]) ){
+      if ((sorted[result_start]<int(n1/2)) && (sorted[i]>=int(n1/2))) {
 
-      std::vector<int> result(sorted.begin()+result_start, sorted.begin()+i+1);
-      //results.push_back(result);
-      int s=result.size();
-      if (result[0]<int(n1/2) && result[s-1]>=int(n1/2)) {
-
-        int m=std::upper_bound(result.begin(), result.end(), int(n1/2)-1)- result.begin();
-        IntegerVector result1=wrap(result);
-        list0.push_back(m-1);//result1[Range(0, m-1)]);
-        list0.push_back(m);}//result1[Range(m, result.size()-1)]);}
+        int m=std::upper_bound(sorted.begin()+result_start, sorted.begin()+i+1, int(n1/2)-1) - sorted.begin();
+        list0.push_back(sorted[Range(result_start, m-1)]);
+        list0.push_back(sorted[Range(m, i)]);
+        }
 
 
-      result_start = i + 1;
+      result_start = i + 1;}
     }
+  if((sorted[result_start]<int(n1/2) && sorted[n1-1]>=int(n1/2))){
+    int m=std::upper_bound(sorted.begin()+result_start, sorted.end(), int(n1/2)-1) - sorted.begin();
+    list0.push_back(sorted[Range(result_start, m-1)]);
+    list0.push_back(sorted[Range(m, n1-1)]);
   }
 
-
-  return list0;//wrap(results);
+  return list0;
 }
+
 
 // [[Rcpp::export]]
 List splitVectors(ListOf<IntegerVector> inputList,int n) {
@@ -1111,5 +1113,189 @@ IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, Int
 }
 
 
+//[[Rcpp::export]]
+IntegerMatrix equalpairs2(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs) {
+  //set sizes of array
+  int nu = u.size();
+  int nv = v.size();
+
+  //init two lists to store pairs
+  std::list<int> pairs_u;
+  std::list<int> pairs_v;
+
+  //set pointers
+  int start = 0;
+  int j = 0;
+  int i=0;
+  //set counter
+  int count = 0;
+
+  //set precision epsilon
+
+  if(v[0]<u[0]){
+    ++start;
+  }
+
+  //start looping through u vector
+  while(i < nu) {
+
+    //increase if too small
+    while(v[start]<u[i] && start < nv-1) {
+      ++start;
+    }
+
+    //if close consider the pairs that might be close
+      while(v[j]==u[i]) {
+        //add pairs that are clsoe
+        pairs_u.push_front(ou[i]);
+        pairs_v.push_front(ov[j]);
+        ++j;
+        ++count;
+        if(j >= nv) {
+          break;
+        }
+      }
+      if(u[i]==u[i+1]){
+        ++i;
+      }
+    //++i;
+    //if there are too many pairs kill the search
+    if(count > max_number_of_pairs) {
+      break;
+    }
+  }
+  int n = 0;
+  //fill pairs in a 2x|pairs| matrix
+  if(pairs_u.size() > 0) {
+    IntegerMatrix pairs(2,pairs_u.size());
+    while(!pairs_u.empty()) {
+      pairs(0,n)=pairs_u.back();
+      pairs_u.pop_back();
+      pairs(1,n)=pairs_v.back();
+      pairs_v.pop_back();
+      ++n;
+    }
+    return pairs;
+  }
+  IntegerMatrix pairs(2,1);
+  return pairs;
+}
+
+// [[Rcpp::export]]
+IntegerMatrix expandGrido(IntegerVector vec1, IntegerVector vec2) {
+  int n = vec1.size();
+  int m = vec2.size();
+
+  IntegerMatrix result(2, n * m);
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) {
+      result(0, i * m + j) = vec1[i];
+      result(1, i * m + j) = vec2[j];
+    }
+  }
+
+  return result;
+}
+
+
+
+
+// [[Rcpp::export]]
+List pairsearch9(IntegerVector a_positions, IntegerVector b_positions,
+                                    IntegerVector a_sorted_values, IntegerVector b_sorted_values) {
+  int n = a_positions.size();
+  int m = b_positions.size();
+  List list(n);
+  int a_pos = 0, b_pos = 0, cur = 0;
+  while (a_pos < n && b_pos < m) {
+    double a_val = a_sorted_values[a_pos];
+    double b_val = b_sorted_values[b_pos];
+
+    if (a_val < b_val) {
+      a_pos++;
+      continue;
+    }
+
+    if (a_val > b_val) {
+      b_pos++;
+      continue;
+    }
+
+    int a_end = n;
+    for (int i = a_pos + 1; i < n; i++) {
+      if (a_sorted_values[i] != a_val) {
+        a_end = i;
+        break;
+      }
+    }
+
+    int b_end = m;
+    for (int i = b_pos + 1; i < m; i++) {
+      if (b_sorted_values[i] != b_val) {
+        b_end = i;
+        break;
+      }
+    }
+    if((a_pos<=a_end-1) && (b_pos<=b_end-1)){
+    list[cur]=expandGrido(a_positions[Range(a_pos,a_end-1)],b_positions[Range(b_pos,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
+    }
+    cur++;
+
+    a_pos = a_end;
+    b_pos = b_end;
+  }
+
+  return list[Range(0, cur - 1)];
+}
+
+
+// [[Rcpp::export]]
+List pairsearch10(IntegerVector a_positions, IntegerVector b_positions,
+                           IntegerVector a_sorted_values, IntegerVector b_sorted_values) {
+  int n = a_positions.size();
+  int m = b_positions.size();
+  IntegerMatrix result(n, 4);
+  List list(n);
+  int a_pos = 0, b_pos = 0, cur = 0;
+  while (a_pos < n && b_pos < m) {
+    double a_val = a_sorted_values[a_pos];
+    double b_val = b_sorted_values[b_pos];
+
+    if (a_val < b_val) {
+      a_pos++;
+      continue;
+    }
+
+    if (a_val > b_val) {
+      b_pos++;
+      continue;
+    }
+
+    int a_end = n;
+    for (int i = a_pos + 1; i < n; i++) {
+      if (a_sorted_values[i] != a_val) {
+        a_end = i;
+        break;
+      }
+    }
+
+    int b_end = m;
+    for (int i = b_pos + 1; i < m; i++) {
+      if (b_sorted_values[i] != b_val) {
+        b_end = i;
+        break;
+      }
+    }
+
+    list[cur]=expandGrid(a_positions[Range(a_pos,a_end-1)],b_positions[Range(b_pos,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
+    cur++;
+
+    a_pos = a_end;
+    b_pos = b_end;
+  }
+
+  return list[Range(0, cur - 1)];//result(Range(0, cur - 1), _);
+}
 
 

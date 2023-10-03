@@ -163,16 +163,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// group
-List group(IntegerVector list, IntegerVector sorted, int n1);
-RcppExport SEXP _testxyz1_group(SEXP listSEXP, SEXP sortedSEXP, SEXP n1SEXP) {
+// groupt
+List groupt(IntegerVector list, IntegerVector sorted, int n1);
+RcppExport SEXP _testxyz1_groupt(SEXP listSEXP, SEXP sortedSEXP, SEXP n1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type list(listSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type sorted(sortedSEXP);
     Rcpp::traits::input_parameter< int >::type n1(n1SEXP);
-    rcpp_result_gen = Rcpp::wrap(group(list, sorted, n1));
+    rcpp_result_gen = Rcpp::wrap(groupt(list, sorted, n1));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -596,6 +596,61 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// equalpairs2
+IntegerMatrix equalpairs2(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs);
+RcppExport SEXP _testxyz1_equalpairs2(SEXP uSEXP, SEXP vSEXP, SEXP ouSEXP, SEXP ovSEXP, SEXP max_number_of_pairsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type u(uSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type v(vSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type ou(ouSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type ov(ovSEXP);
+    Rcpp::traits::input_parameter< int >::type max_number_of_pairs(max_number_of_pairsSEXP);
+    rcpp_result_gen = Rcpp::wrap(equalpairs2(u, v, ou, ov, max_number_of_pairs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// expandGrido
+IntegerMatrix expandGrido(IntegerVector vec1, IntegerVector vec2);
+RcppExport SEXP _testxyz1_expandGrido(SEXP vec1SEXP, SEXP vec2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type vec1(vec1SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type vec2(vec2SEXP);
+    rcpp_result_gen = Rcpp::wrap(expandGrido(vec1, vec2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pairsearch9
+List pairsearch9(IntegerVector a_positions, IntegerVector b_positions, IntegerVector a_sorted_values, IntegerVector b_sorted_values);
+RcppExport SEXP _testxyz1_pairsearch9(SEXP a_positionsSEXP, SEXP b_positionsSEXP, SEXP a_sorted_valuesSEXP, SEXP b_sorted_valuesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type a_positions(a_positionsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b_positions(b_positionsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type a_sorted_values(a_sorted_valuesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b_sorted_values(b_sorted_valuesSEXP);
+    rcpp_result_gen = Rcpp::wrap(pairsearch9(a_positions, b_positions, a_sorted_values, b_sorted_values));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pairsearch10
+List pairsearch10(IntegerVector a_positions, IntegerVector b_positions, IntegerVector a_sorted_values, IntegerVector b_sorted_values);
+RcppExport SEXP _testxyz1_pairsearch10(SEXP a_positionsSEXP, SEXP b_positionsSEXP, SEXP a_sorted_valuesSEXP, SEXP b_sorted_valuesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type a_positions(a_positionsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b_positions(b_positionsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type a_sorted_values(a_sorted_valuesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b_sorted_values(b_sorted_valuesSEXP);
+    rcpp_result_gen = Rcpp::wrap(pairsearch10(a_positions, b_positions, a_sorted_values, b_sorted_values));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_FibCpp0", (DL_FUNC) &_testxyz1_FibCpp0, 1},
@@ -611,7 +666,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_binarySearchIndex", (DL_FUNC) &_testxyz1_binarySearchIndex, 2},
     {"_testxyz1_pair_search6", (DL_FUNC) &_testxyz1_pair_search6, 2},
     {"_testxyz1_pair_search7", (DL_FUNC) &_testxyz1_pair_search7, 2},
-    {"_testxyz1_group", (DL_FUNC) &_testxyz1_group, 3},
+    {"_testxyz1_groupt", (DL_FUNC) &_testxyz1_groupt, 3},
     {"_testxyz1_splitVectors", (DL_FUNC) &_testxyz1_splitVectors, 2},
     {"_testxyz1_group2", (DL_FUNC) &_testxyz1_group2, 3},
     {"_testxyz1_pair_search4", (DL_FUNC) &_testxyz1_pair_search4, 2},
@@ -646,6 +701,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_rs", (DL_FUNC) &_testxyz1_rs, 3},
     {"_testxyz1_makeZ", (DL_FUNC) &_testxyz1_makeZ, 2},
     {"_testxyz1_equalpairs", (DL_FUNC) &_testxyz1_equalpairs, 5},
+    {"_testxyz1_equalpairs2", (DL_FUNC) &_testxyz1_equalpairs2, 5},
+    {"_testxyz1_expandGrido", (DL_FUNC) &_testxyz1_expandGrido, 2},
+    {"_testxyz1_pairsearch9", (DL_FUNC) &_testxyz1_pairsearch9, 4},
+    {"_testxyz1_pairsearch10", (DL_FUNC) &_testxyz1_pairsearch10, 4},
     {NULL, NULL, 0}
 };
 
