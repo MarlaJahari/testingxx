@@ -1020,6 +1020,7 @@ NumericVector r(int n, int minValue=0, int maxValue=10) {
 
   return result;
 }
+
 // [[Rcpp::export]]
 IntegerVector rs(int n, int minValue=0, int maxValue=100) {
   IntegerVector result(n);
@@ -1287,7 +1288,7 @@ List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
       }
     }
     if((a<=a_end-1) && (b<=b_end-1)){
-      list[z]=expandGrid(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
+      list[z]= expandGrid(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
     }
     z++;
 
@@ -1297,5 +1298,6 @@ List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
 
   return list[Range(0, z- 1)];
 }
+
 
 

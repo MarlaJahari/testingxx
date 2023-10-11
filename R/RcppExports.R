@@ -201,11 +201,11 @@ expandGrido <- function(vec1, vec2) {
     .Call(`_testxyz1_expandGrido`, vec1, vec2)
 }
 
-pairsearch9 <- function(a_positions, b_positions, a_sorted_values, b_sorted_values) {
-    .Call(`_testxyz1_pairsearch9`, a_positions, b_positions, a_sorted_values, b_sorted_values)
-}
-
 pairsearch10 <- function(a_positions, b_positions, a_sorted_values, b_sorted_values) {
     .Call(`_testxyz1_pairsearch10`, a_positions, b_positions, a_sorted_values, b_sorted_values)
+}
+
+pairsearch11 <- function(a_positions, b_positions, a_sorted_values, b_sorted_values) {
+    .Call(`_testxyz1_pairsearch11`, a_positions, b_positions, a_sorted_values, b_sorted_values)
 }
 

@@ -72,19 +72,6 @@ getpairs2 <- function(p) {
   return(mat)
 }
 
-getpairs3 <- function(p) {
-  grids <- lapply(p, function(x) expand.grid(x[[1]], x[[2]]))
-  non_empty_grids <- Filter(function(x) !is.null(x), grids)
-
-  if (length(non_empty_grids)==0) {
-    return(matrix(0, 0, 2))
-  }
-
-  mat<- do.call(rbind, non_empty_grids)
-  colnames(mat) <- NULL
-  return(mat)
-}
-
 
 
 
@@ -94,6 +81,8 @@ getunion<-function(x)
   mat1<-cbind(mat1,getpairs(x[[i]]))
  }
   return(mat1)}
+
+
 
 #mat1 <- matrix(nrow = 2)
 #mat2 <- matrix(7:12, ncol = 2)

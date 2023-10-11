@@ -623,20 +623,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// pairsearch9
-List pairsearch9(IntegerVector a_positions, IntegerVector b_positions, IntegerVector a_sorted_values, IntegerVector b_sorted_values);
-RcppExport SEXP _testxyz1_pairsearch9(SEXP a_positionsSEXP, SEXP b_positionsSEXP, SEXP a_sorted_valuesSEXP, SEXP b_sorted_valuesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type a_positions(a_positionsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type b_positions(b_positionsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type a_sorted_values(a_sorted_valuesSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type b_sorted_values(b_sorted_valuesSEXP);
-    rcpp_result_gen = Rcpp::wrap(pairsearch9(a_positions, b_positions, a_sorted_values, b_sorted_values));
-    return rcpp_result_gen;
-END_RCPP
-}
 // pairsearch10
 List pairsearch10(IntegerVector a_positions, IntegerVector b_positions, IntegerVector a_sorted_values, IntegerVector b_sorted_values);
 RcppExport SEXP _testxyz1_pairsearch10(SEXP a_positionsSEXP, SEXP b_positionsSEXP, SEXP a_sorted_valuesSEXP, SEXP b_sorted_valuesSEXP) {
@@ -648,6 +634,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type a_sorted_values(a_sorted_valuesSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type b_sorted_values(b_sorted_valuesSEXP);
     rcpp_result_gen = Rcpp::wrap(pairsearch10(a_positions, b_positions, a_sorted_values, b_sorted_values));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pairsearch11
+List pairsearch11(IntegerVector a_positions, IntegerVector b_positions, IntegerVector a_sorted_values, IntegerVector b_sorted_values);
+RcppExport SEXP _testxyz1_pairsearch11(SEXP a_positionsSEXP, SEXP b_positionsSEXP, SEXP a_sorted_valuesSEXP, SEXP b_sorted_valuesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type a_positions(a_positionsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b_positions(b_positionsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type a_sorted_values(a_sorted_valuesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b_sorted_values(b_sorted_valuesSEXP);
+    rcpp_result_gen = Rcpp::wrap(pairsearch11(a_positions, b_positions, a_sorted_values, b_sorted_values));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -703,8 +703,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_equalpairs", (DL_FUNC) &_testxyz1_equalpairs, 5},
     {"_testxyz1_equalpairs2", (DL_FUNC) &_testxyz1_equalpairs2, 5},
     {"_testxyz1_expandGrido", (DL_FUNC) &_testxyz1_expandGrido, 2},
-    {"_testxyz1_pairsearch9", (DL_FUNC) &_testxyz1_pairsearch9, 4},
     {"_testxyz1_pairsearch10", (DL_FUNC) &_testxyz1_pairsearch10, 4},
+    {"_testxyz1_pairsearch11", (DL_FUNC) &_testxyz1_pairsearch11, 4},
     {NULL, NULL, 0}
 };
 
