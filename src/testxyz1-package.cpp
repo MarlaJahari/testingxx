@@ -1300,4 +1300,74 @@ List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
 }
 
 
+//soft-thresholding function
+NumericVector soft_threshold(NumericVector x, double lambda) {
+  NumericVector result=abs(x)-lambda;
+  return ifelse(result > 0.0, result, 0.0);
+}
+
+//function to compute Lasso solution for a given lambda
+List compute_lasso_solution(const NumericMatrix& X, const NumericVector& Y, const IntegerVector& A, const IntegerVector& B, double lambda) {
+  int n= X.nrow();
+  int p= X.ncol();
+
+  //subset design matrix and response vector based on active sets A and B
+  NumericMatrix X_A=X; //(_, A);
+  NumericVector Y_B=Y; //- X(_, B) * 0.0;  //for indices of THETA, so θ_B is set to 0
+
+  //compute lasso solution
+  NumericVector beta_hat_A = 0.0; //solve(t(X_A) * X_A + lambda * n * diag(p), t(X_A) * Y_B);
+  NumericVector theta_hat_B = 0.0;  //placeholder for theta_B since B is known
+
+  //update beta and theta for the full vector
+  NumericVector beta_hat(p,0.0);
+  NumericVector theta_hat(p,0.0);
+
+  beta_hat[A]= beta_hat_A;
+  theta_hat[B]= theta_hat_B;
+
+  return List::create(_["beta"] = beta_hat, _["theta"] = theta_hat);
+}
+
+//active set strategy for lasso computation
+List active_set_lasso(const NumericMatrix& X, const NumericVector& Y, const NumericVector& lambda_values) {
+  int p=X.ncol();
+  int L=lambda_values.size();
+
+  //initialize solution vectors
+  NumericMatrix beta_solutions(p, L);
+  NumericMatrix theta_solutions(p, L);
+
+  IntegerVector A, B;
+
+  for (int l=0; l<L; ++l) {
+    if (l>0) {
+      A=seq_len(p); //[beta_solutions(_, l - 1) != 0.0];
+      B=seq_len(p); //[theta_solutions(_, l - 1) != 0.0];
+    }
+
+    //compute Lasso solution for the current lambda
+    List solution =compute_lasso_solution(X, Y, A, B, lambda_values[l]);
+    NumericVector beta_hat= solution["beta"];
+    NumericVector theta_hat= solution["theta"];
+
+    // find sets U and V based on KKT conditions
+    NumericVector kkt_cond = abs(transpose(X)*(Y - X*beta_hat - theta_hat))/X.nrow();
+    IntegerVector U= seq_len(p); //[kkt_cond > lambda_values[l]];
+    IntegerVector V= intersect(A, U);
+
+    if (U.size()==0 && V.size()==0) {
+      //No violations so update solutions
+      beta_solutions(_, l)=beta_hat;
+      theta_solutions(_, l)=theta_hat;
+    } else{
+      //update A and B and repeat
+      A= union_(A, U);
+      B= union_(B, V);
+      l--; // repeating with the same lambda
+    }
+  }
+
+  return List::create(_["beta"] = beta_solutions, _["theta"] = theta_solutions);
+}
 
