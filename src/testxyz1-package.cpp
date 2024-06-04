@@ -166,46 +166,7 @@ List find(IntegerVector v, int k) {
 
 
 
-// [[Rcpp::export]]
-IntegerVector pair_search3(NumericVector x, NumericVector y) {
-  int n = x.size();
-  // append elements from y to the end of x
-  for (int i = 0; i<n; ++i) {
-    x.push_back(y[i]);
-  }
-  int N = x.size();
-  std::vector<int> index_vec(N);
-  std::iota(index_vec.begin(), index_vec.end(), 0);  // initialize with [0, 1, 2, ...]
 
-
-  // sort the index_vec based on the values in the input vector v
-  std::sort(index_vec.begin(), index_vec.end(),
-            [&](int i, int j) { return x[i] < x[j] || (x[i] == x[j] && i < j); });
-
-
-  for(int i=0; i<N; i++){
-    if(index_vec[i]>n-1){
-    index_vec[i]+=10*(n-1);}
-  }
-
-  // convert the std::vector<int> to IntegerVector before returning
-  IntegerVector sorted_indexes(index_vec.begin(), index_vec.end());
-  IntegerMatrix s(2,n*n);
-  std::sort(x.begin(),x.end());
-  int i=0;
-  IntegerVector p(0);
-  for(i=0;i<N;++i){
-    int j=i+1;
-    while(x[i]==x[j]){
-      if(abs(sorted_indexes[i]-sorted_indexes[j])>N){
-        p.push_back(sorted_indexes[i]+1);
-        p.push_back(sorted_indexes[j]-10*(n-1)-n+1);
-        p.attr("dim")=Dimension(2,int(p.length()/2));}
-        j++;}
-    }
-
-  return p;//sorted_indexes;//apply_permutation(as<NumericVector>(sorted_index_vector(x)),wrap(index_vec));//sorted_indexes;
-}
 
 // [[Rcpp::export]]
 int findindexit(IntegerVector vec, double n) {
@@ -239,102 +200,6 @@ int binarySearchIndex(IntegerVector v, int n) {
 }
 
 
-// [[Rcpp::export]]
-List pair_search6(NumericVector x, IntegerVector sorted_indexes) {
-
-  int N = x.size();
-  int n=int(N/2);
-  //initiate list
-  List list(0);
-
-  int i=0;
-  while(i<(N)){
-    //initialize m to get split index
-    int m=0;
-    //start by checking consecutive elements
-    int j=i+1;
-    bool check=false;
-    while (x[i] == x[j]) {
-      if (!check && sorted_indexes[j] >= n && sorted_indexes[j - 1] < n) {
-      m=j;
-      list.push_back(sorted_indexes[Range(i, m - 1)] + 1);
-      check=true; // set the flag to true once the condition is met
-      }
-      j++;
-    }
-
-    if(((j-i)>1)&&m>0){
-      list.push_back((sorted_indexes[Range(m,j-1)])-n+1);//indexes from second vector
-    }
-    i=j;}// jump to next (non-repeated) value
-
-  return list;}
-
-// [[Rcpp::export]]
-List pair_search7(NumericVector x, IntegerVector sorted_indexes) {
-
-  int N = x.size();
-  int n=int(N/2);
-  //initiate list
-  List list(0);
-
-  int i=0;
-  while(i<(N)){
-    //initialize m to get split index
-    int m=0;
-    //start by checking consecutive elements
-    int j=i+1;
-    while (x[i] == x[j]) {
-      j++;
-    }
-
-    if((j-i)>1){
-
-    int temp=findindexit(sorted_indexes[Range(i,j-1)],n);
-
-    if(temp>=n && sorted_indexes[i]!=temp ){
-      m=binarySearchIndex(sorted_indexes[Range(i,j-1)],temp);
-      list.push_back(sorted_indexes[Range(i, m+i - 1)] + 1);
-      list.push_back((sorted_indexes[Range(m+i,j-1)])-n+1);
-    }
-    }
-
-    i=j;}// jump to next (non-repeated) value
-
-  return list;}
-
-
-
-
-
-
-
-//[[Rcpp::export]]
-List groupt(IntegerVector list, IntegerVector sorted, int n1) {
-  int n = list.size();
-  int result_start = 0;
-  List list0(0);
-  for (int i=0; i< n-1; i++) {
-
-    if ((list[i]!=list[i+1]) ){
-      if ((sorted[result_start]<int(n1/2)) && (sorted[i]>=int(n1/2))) {
-
-        int m=std::upper_bound(sorted.begin()+result_start, sorted.begin()+i+1, int(n1/2)-1) - sorted.begin();
-        list0.push_back(sorted[Range(result_start, m-1)]);
-        list0.push_back(sorted[Range(m, i)]);
-        }
-
-
-      result_start = i + 1;}
-    }
-  if((sorted[result_start]<int(n1/2) && sorted[n1-1]>=int(n1/2))){
-    int m=std::upper_bound(sorted.begin()+result_start, sorted.end(), int(n1/2)-1) - sorted.begin();
-    list0.push_back(sorted[Range(result_start, m-1)]);
-    list0.push_back(sorted[Range(m, n1-1)]);
-  }
-
-  return list0;
-}
 
 
 // [[Rcpp::export]]
@@ -358,32 +223,82 @@ List splitVectors(ListOf<IntegerVector> inputList,int n) {
 }
 
 
+
+
+// function to create a matrix from two vectors similar to expand.grid in R
 // [[Rcpp::export]]
-List group2(IntegerVector list, IntegerVector sorted, int n1) {
-  int n = list.size();
-  int result_start = 0;
-  List list0;
+IntegerMatrix expandGrid(IntegerVector vec1, IntegerVector vec2) {
+  int len1 = vec1.size();
+  int len2 = vec2.size();
 
-  for (int i = 0; i < n ; i++) {
-    if (list[i] != list[i + 1]) {
-      IntegerVector vec = sorted[Range(result_start, i)];
-      int s=vec.size();
-      if (vec[0]<int(n1/2) && vec[s-1]>=int(n1/2)) {
-        int m=std::upper_bound(vec.begin(), vec.end(), int(n1/2)-1)- vec.begin();
-        list0.push_back(vec[Range(0, m-1)]);
-        list0.push_back(vec[Range(m, vec.size()-1)]);}
-      // }
 
-      //list0.push_back(sorted[Range(result_start, i)]);
-      result_start = i + 1;
-    }
-  }
+  IntegerMatrix result(2,len1 * len2);
+  result(0,_)= rep(vec1, len2);
+  result(1,_)= rep(vec2, len1);
 
-  //IntegerVector result = sorted[Range(result_start, n - 1)];
-  //list0.push_back(sorted[Range(result_start, n - 1)]);
-  return list0;
+  return result;
 }
 
+
+
+
+// function to apply the cantor map to a 2*n matrix of pairs
+// [[Rcpp::export]]
+NumericVector cantor_map(NumericMatrix pairs) {
+  int n = pairs.ncol();
+  NumericVector result(n);
+
+  for (int i=0; i<n; i++) {
+    double x=pairs(0,i);
+    double y=pairs(1,i);
+    result[i]= 0.5*(x+y)*(x+y+1) +y;
+  }
+
+  return result;
+}
+
+// inverse Cantor map from a vector of integers
+// [[Rcpp::export]]
+NumericMatrix inverse_cantor_map(NumericVector values) {
+  int n = values.size();
+  NumericMatrix result(2, n);
+  for (int i=0; i<n; i++) {
+    double t= floor((-1 + sqrt(1+ 8*values[i]))/ 2);
+    double w= values[i] - 0.5 *t*(t + 1);
+    double x= t-w;
+    double y= w;
+
+    result(0,i)=x;
+    result(1,i)=y;
+  }
+
+  return result;
+}
+
+
+// normalize a vector to have an L1 norm of 1
+// [[Rcpp::export]]
+NumericVector normalizeL1(NumericVector vec) {
+  double sum=0.0;
+  for (int i=0; i<vec.size(); ++i) {
+    sum += std::abs(vec[i]);
+    vec[i]=std::abs(vec[i]);
+  }
+  if (sum==0.0) {
+    return vec; //no division by zero
+  }
+  return vec/sum;
+}
+
+// [[Rcpp::export]]
+NumericVector transformY(NumericVector vec) {
+  for (int i=0; i<vec.size(); ++i) {
+    if (vec[i]<= 0) {vec[i] = 0;}
+    else if(vec[i]==0){double ran=R::runif(0,1);vec[i] = (ran<0.5) ? 0 : 1;}
+    else {  vec[i] = 1;}
+  }
+  return vec;
+}
 
 
 // [[Rcpp::export]]
@@ -407,204 +322,38 @@ List pair_search4(NumericVector x, NumericVector y) {
     int j=i+1;
     while(x[i]==x[j]){
       if(sorted_indexes[j]>=n&&sorted_indexes[j-1]<n){m=j;}//if consequent values come from different vectors, get the index to split
-        j++;
-        }
-      Rcpp::List v(0);
-
-    //if there are repetitions & they come from different vectors, split and push to different elements of list,
-    //append list to main list
-
-      if(((j-i)>1)&&m>0){
-        v.push_back(sorted_indexes[Rcpp::Range(i,m-1)]+1);// indexes from first vector
-        v.push_back((sorted_indexes[Rcpp::Range(m,j-1)])-n+1);//indexes from second vector
-        list.push_back(v);
-        }
-      i=j;}// jump to next (non-repeated) value
-
-     return list;}
-
-// [[Rcpp::export]]
-List test4(NumericVector x, IntegerVector sorted_indexes) {
-
-  int N=x.size();
-  int n=N/2;
-
-  List list;
-  int i=0;
-  while (i < N) {
-    int j=i+1;
-    while (j<N && x[i] == x[j]) {
-      if (sorted_indexes[j] >= n && sorted_indexes[j - 1] < n) {
-        list.push_back(sorted_indexes[Range(i, j - 1)] + 1);
-        list.push_back(sorted_indexes[Range(j, j)] - n + 1);
-      }
       j++;
     }
-    i=j;
-  }
-
-  return list;
-}
-
-// function to create a matrix from two vectors similar to expand.grid in R
-// [[Rcpp::export]]
-IntegerMatrix expandGrid(IntegerVector vec1, IntegerVector vec2) {
-  int len1 = vec1.size();
-  int len2 = vec2.size();
-
-
-  IntegerMatrix result(2,len1 * len2);
-  result(0,_)= rep(vec1, len2);
-  result(1,_)= rep(vec2, len1);
-
-  return result;
-}
-
-
-// [[Rcpp::export]]
-IntegerMatrix pair_search8(NumericVector x, NumericVector y) {
-  int n = x.size();
-  // append elements from y to the end of x
-  for (int i = 0; i<n; ++i) {
-    x.push_back(y[i]);
-  }
-  //get size of x
-  int N = x.size();
-  //initiate list
-  IntegerMatrix m0(2,0);
-  IntegerVector sorted_indexes=sorted_index_vector(x);//(index_vec.begin(), index_vec.end());
-  //sort x
-  std::sort(x.begin(),x.end());
-  int i=0;
-  while(i<N){
-    //initialize m to get split index
-    int m=0;
-    //start by checking consecutive elements
-    int j=i+1;
-    while(x[i]==x[j]){
-      if(sorted_indexes[j]>=n&&sorted_indexes[j-1]<n){m=j;}//if consequent values come from different vectors, get the index to split
-      j++;
-    }
-    IntegerMatrix m1(2,0);
+    Rcpp::List v(0);
 
     //if there are repetitions & they come from different vectors, split and push to different elements of list,
     //append list to main list
 
     if(((j-i)>1)&&m>0){
-      m1=expandGrid((sorted_indexes[Rcpp::Range(i,m-1)]+1),((sorted_indexes[Rcpp::Range(m,j-1)])-n+1));//indexes from second vector
-      m0=cbind(m0,m1);//list.push_back(v);
+      v.push_back(sorted_indexes[Rcpp::Range(i,m-1)]+1);// indexes from first vector
+      v.push_back((sorted_indexes[Rcpp::Range(m,j-1)])-n+1);//indexes from second vector
+      list.push_back(v);
     }
     i=j;}// jump to next (non-repeated) value
 
-  return m0;}
-
-// [[Rcpp::export]]
-IntegerMatrix test3(NumericVector x, IntegerVector sorted_indexes) {
-
-  int N = x.size();
-  int n=int(N/2);
-  //initiate list
-  IntegerMatrix m0(2,0);
-
-  int i=0;
-  while(i<N){
-    //initialize m to get split index
-    int m=0;
-    //start by checking consecutive elements
-    int j=i+1;
-    while(x[i]==x[j]){
-      if(sorted_indexes[j]>=n&&sorted_indexes[j-1]<n){m=j;}//if consequent values come from different vectors, get the index to split
-      j++;
-    }
-    IntegerMatrix m1(2,0);
-
-    //if there are repetitions & they come from different vectors, split and push to different elements of list,
-    //append list to main list
-
-    if(((j-i)>1)&&m>0){
-      m1=expandGrid((sorted_indexes[Rcpp::Range(i,m-1)]+1),((sorted_indexes[Rcpp::Range(m,j-1)])-n+1));//indexes from second vector
-      m0=cbind(m0,m1);//list.push_back(v);
-    }
-    i=j;}// jump to next (non-repeated) value
-
-  return m0;}
-
-// function to apply the cantor map to a 2*n matrix of pairs
-// [[Rcpp::export]]
-NumericVector cantor_map(NumericMatrix pairs) {
-  int n = pairs.ncol();
-  NumericVector result(n);
-
-  for (int i=0; i<n; i++) {
-    double x= pairs(0,i);
-    double y= pairs(1,i);
-    result[i]= 0.5*(x+y)*(x+y+1) +y;
-  }
-
-  return result;
-}
-
-// inverse Cantor map from a vector of integers
-// [[Rcpp::export]]
-NumericMatrix inverse_cantor_map(NumericVector values) {
-  int n = values.size();
-  NumericMatrix result(2, n);
-
-  for (int i= 0; i< n; i++) {
-    double t= floor((-1 + sqrt(1+ 8*values[i]))/ 2);
-    double w= values[i] - 0.5 *t*(t + 1);
-    double x= t-w;
-    double y= w;
-
-    result(0,i)=x;
-    result(1,i)=y;
-  }
-
-  return result;
-}
-
-
-// normalize a vector to have an L1 norm of 1
-// [[Rcpp::export]]
-NumericVector normalizeL1(NumericVector vec) {
-  double sum=0.0;
-  for (int i=0; i<vec.size(); ++i) {
-    sum += std::abs(vec[i]);
-    vec[i]=std::abs(vec[i]);
-  }
-  if (sum==0.0) {
-    return vec; // no division by zero
-  }
-  return vec/sum;
-}
-
-// [[Rcpp::export]]
-NumericVector transformY(NumericVector vec) {
-  for (int i = 0; i < vec.size(); ++i) {
-    if (vec[i] <= 0) { vec[i] = 0;}
-    else if(vec[i]==0){double ran=R::runif(0,1);vec[i] = (ran<0.5) ? 0 : 1;}
-    else {  vec[i] = 1;}
-  }
-  return vec;
-}
+  return list;}
 
 //  perform uniform sampling from matrices X and Z, for the binary case
 // [[Rcpp::export]]
 List uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
-  int n = X.nrow(); // assuming the number of rows is equal to the size of Y
-  int p1=X.ncol();
+  int n= X.nrow(); // assuming the number of rows is equal to the size of Y
+  int p1= X.ncol();
   NumericMatrix Z(n,p1);
 
   for (int i=0; i<n; ++i) {
-    for (int l=0; l < p1;++l) {
-      Z(i,l) = Y[i]*X(i, l);
-    }
+    for (int l=0; l < p1; ++l) {
+      Z(i,l)=Y[i]*X(i,l);}
   }
 
   List result; // to store results
 
   for (int j = 0; j < k; ++j) {
-    IntegerVector sampledIndices = Rcpp::sample(n, p, false);
+    IntegerVector sampledIndices=Rcpp::sample(n, p, false);
     std::sort(sampledIndices.begin(), sampledIndices.end());
     // initialize the result matrices for sampled rows
     NumericMatrix sampledX(p, X.ncol());
@@ -622,6 +371,7 @@ List uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
 
   return result;
 }
+
 
 
 
@@ -1308,7 +1058,7 @@ NumericVector soft_threshold(NumericVector x, double lambda) {
 
 //function to compute Lasso solution for a given lambda
 List compute_lasso_solution(const NumericMatrix& X, const NumericVector& Y, const IntegerVector& A, const IntegerVector& B, double lambda) {
-  int n= X.nrow();
+  //int n= X.nrow();
   int p= X.ncol();
 
   //subset design matrix and response vector based on active sets A and B
