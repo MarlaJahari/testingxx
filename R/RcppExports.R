@@ -133,6 +133,62 @@ getunique <- function(combined) {
     .Call(`_testxyz1_getunique`, combined)
 }
 
+nzeroindices <- function(x) {
+    .Call(`_testxyz1_nzeroindices`, x)
+}
+
+softThreshold <- function(z, gamma) {
+    .Call(`_testxyz1_softThreshold`, z, gamma)
+}
+
+co <- function(v) {
+    .Call(`_testxyz1_co`, v)
+}
+
+lassorisky <- function(Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter = 1000L, tol = 1e-6) {
+    .Call(`_testxyz1_lassorisky`, Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter, tol)
+}
+
+lassorisky2 <- function(Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter = 1000L, tol = 1e-6) {
+    .Call(`_testxyz1_lassorisky2`, Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter, tol)
+}
+
+lassoInteractions <- function(Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter = 1000L, tol = 1e-6) {
+    .Call(`_testxyz1_lassoInteractions`, Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter, tol)
+}
+
+computesolution <- function(Y, X, nzero_indices_beta, nzero_indices_theta, lambda, max_iter = 1000L, tol = 1e-6) {
+    .Call(`_testxyz1_computesolution`, Y, X, nzero_indices_beta, nzero_indices_theta, lambda, max_iter, tol)
+}
+
+normalizeMatrix <- function(X) {
+    .Call(`_testxyz1_normalizeMatrix`, X)
+}
+
+normalizeVector <- function(Y) {
+    .Call(`_testxyz1_normalizeVector`, Y)
+}
+
+size <- function(lm) {
+    .Call(`_testxyz1_size`, lm)
+}
+
+transform_pairs <- function(nested_pairs) {
+    .Call(`_testxyz1_transform_pairs`, nested_pairs)
+}
+
+tecxt <- function(X, Y) {
+    .Call(`_testxyz1_tecxt`, X, Y)
+}
+
+computesolutionxyz <- function(X, Y, lambda_grid) {
+    .Call(`_testxyz1_computesolutionxyz`, X, Y, lambda_grid)
+}
+
+generate_interaction_matrix <- function(X) {
+    .Call(`_testxyz1_generate_interaction_matrix`, X)
+}
+
 hadamard <- function(x, y) {
     .Call(`_testxyz1_hadamard`, x, y)
 }

@@ -403,6 +403,188 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// nzeroindices
+IntegerVector nzeroindices(NumericVector x);
+RcppExport SEXP _testxyz1_nzeroindices(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(nzeroindices(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// softThreshold
+double softThreshold(double z, double gamma);
+RcppExport SEXP _testxyz1_softThreshold(SEXP zSEXP, SEXP gammaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type z(zSEXP);
+    Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
+    rcpp_result_gen = Rcpp::wrap(softThreshold(z, gamma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// co
+NumericVector co(int v);
+RcppExport SEXP _testxyz1_co(SEXP vSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type v(vSEXP);
+    rcpp_result_gen = Rcpp::wrap(co(v));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lassorisky
+List lassorisky(NumericVector Y, NumericMatrix X, double lambda, IntegerVector nzero_indices_beta, IntegerVector nzero_indices_theta, int max_iter, double tol);
+RcppExport SEXP _testxyz1_lassorisky(SEXP YSEXP, SEXP XSEXP, SEXP lambdaSEXP, SEXP nzero_indices_betaSEXP, SEXP nzero_indices_thetaSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nzero_indices_beta(nzero_indices_betaSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nzero_indices_theta(nzero_indices_thetaSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(lassorisky(Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lassorisky2
+List lassorisky2(NumericVector Y, NumericMatrix X, double lambda, IntegerVector nzero_indices_beta, IntegerVector nzero_indices_theta, int max_iter, double tol);
+RcppExport SEXP _testxyz1_lassorisky2(SEXP YSEXP, SEXP XSEXP, SEXP lambdaSEXP, SEXP nzero_indices_betaSEXP, SEXP nzero_indices_thetaSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nzero_indices_beta(nzero_indices_betaSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nzero_indices_theta(nzero_indices_thetaSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(lassorisky2(Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lassoInteractions
+List lassoInteractions(NumericVector Y, NumericMatrix X, double lambda, IntegerVector zero_indices_beta, IntegerVector zero_indices_theta, int max_iter, double tol);
+RcppExport SEXP _testxyz1_lassoInteractions(SEXP YSEXP, SEXP XSEXP, SEXP lambdaSEXP, SEXP zero_indices_betaSEXP, SEXP zero_indices_thetaSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type zero_indices_beta(zero_indices_betaSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type zero_indices_theta(zero_indices_thetaSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(lassoInteractions(Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// computesolution
+List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indices_beta, IntegerVector nzero_indices_theta, double lambda, int max_iter, double tol);
+RcppExport SEXP _testxyz1_computesolution(SEXP YSEXP, SEXP XSEXP, SEXP nzero_indices_betaSEXP, SEXP nzero_indices_thetaSEXP, SEXP lambdaSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nzero_indices_beta(nzero_indices_betaSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nzero_indices_theta(nzero_indices_thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(computesolution(Y, X, nzero_indices_beta, nzero_indices_theta, lambda, max_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// normalizeMatrix
+NumericMatrix normalizeMatrix(NumericMatrix X);
+RcppExport SEXP _testxyz1_normalizeMatrix(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(normalizeMatrix(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// normalizeVector
+NumericVector normalizeVector(NumericVector Y);
+RcppExport SEXP _testxyz1_normalizeVector(SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(normalizeVector(Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// size
+int size(NumericVector lm);
+RcppExport SEXP _testxyz1_size(SEXP lmSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lm(lmSEXP);
+    rcpp_result_gen = Rcpp::wrap(size(lm));
+    return rcpp_result_gen;
+END_RCPP
+}
+// transform_pairs
+List transform_pairs(List nested_pairs);
+RcppExport SEXP _testxyz1_transform_pairs(SEXP nested_pairsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type nested_pairs(nested_pairsSEXP);
+    rcpp_result_gen = Rcpp::wrap(transform_pairs(nested_pairs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tecxt
+IntegerVector tecxt(NumericVector X, NumericVector Y);
+RcppExport SEXP _testxyz1_tecxt(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(tecxt(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// computesolutionxyz
+List computesolutionxyz(NumericMatrix X, NumericVector Y, NumericVector lambda_grid);
+RcppExport SEXP _testxyz1_computesolutionxyz(SEXP XSEXP, SEXP YSEXP, SEXP lambda_gridSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lambda_grid(lambda_gridSEXP);
+    rcpp_result_gen = Rcpp::wrap(computesolutionxyz(X, Y, lambda_grid));
+    return rcpp_result_gen;
+END_RCPP
+}
+// generate_interaction_matrix
+NumericMatrix generate_interaction_matrix(NumericMatrix X);
+RcppExport SEXP _testxyz1_generate_interaction_matrix(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(generate_interaction_matrix(X));
+    return rcpp_result_gen;
+END_RCPP
+}
 // hadamard
 NumericVector hadamard(NumericVector x, NumericVector y);
 RcppExport SEXP _testxyz1_hadamard(SEXP xSEXP, SEXP ySEXP) {
@@ -745,6 +927,20 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_uniformSampling", (DL_FUNC) &_testxyz1_uniformSampling, 4},
     {"_testxyz1_weightedSampling", (DL_FUNC) &_testxyz1_weightedSampling, 4},
     {"_testxyz1_getunique", (DL_FUNC) &_testxyz1_getunique, 1},
+    {"_testxyz1_nzeroindices", (DL_FUNC) &_testxyz1_nzeroindices, 1},
+    {"_testxyz1_softThreshold", (DL_FUNC) &_testxyz1_softThreshold, 2},
+    {"_testxyz1_co", (DL_FUNC) &_testxyz1_co, 1},
+    {"_testxyz1_lassorisky", (DL_FUNC) &_testxyz1_lassorisky, 7},
+    {"_testxyz1_lassorisky2", (DL_FUNC) &_testxyz1_lassorisky2, 7},
+    {"_testxyz1_lassoInteractions", (DL_FUNC) &_testxyz1_lassoInteractions, 7},
+    {"_testxyz1_computesolution", (DL_FUNC) &_testxyz1_computesolution, 7},
+    {"_testxyz1_normalizeMatrix", (DL_FUNC) &_testxyz1_normalizeMatrix, 1},
+    {"_testxyz1_normalizeVector", (DL_FUNC) &_testxyz1_normalizeVector, 1},
+    {"_testxyz1_size", (DL_FUNC) &_testxyz1_size, 1},
+    {"_testxyz1_transform_pairs", (DL_FUNC) &_testxyz1_transform_pairs, 1},
+    {"_testxyz1_tecxt", (DL_FUNC) &_testxyz1_tecxt, 2},
+    {"_testxyz1_computesolutionxyz", (DL_FUNC) &_testxyz1_computesolutionxyz, 3},
+    {"_testxyz1_generate_interaction_matrix", (DL_FUNC) &_testxyz1_generate_interaction_matrix, 1},
     {"_testxyz1_hadamard", (DL_FUNC) &_testxyz1_hadamard, 2},
     {"_testxyz1_inner_product", (DL_FUNC) &_testxyz1_inner_product, 2},
     {"_testxyz1_filter", (DL_FUNC) &_testxyz1_filter, 4},
