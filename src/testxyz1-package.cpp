@@ -265,11 +265,17 @@ NumericMatrix inverse_cantor_map(NumericVector values) {
   for (int i=0; i<n; i++) {
     double t= floor((-1 + sqrt(1+ 8*values[i]))/ 2);
     double w= values[i] - 0.5 *t*(t + 1);
-    double x= t-w;
-    double y= w;
+
+
+    double x=floor(t-w);
+
+
+    //double x= t-w;
+    double y= floor(w);
 
     result(0,i)=x;
     result(1,i)=y;
+
   }
 
   return result;
@@ -300,6 +306,37 @@ NumericVector transformY(NumericVector vec) {
   return vec;
 }
 
+// [[Rcpp::export]]
+IntegerVector getInteractionColumn(NumericMatrix IND, int p) {
+  int k = IND.ncol();
+  //NumericVector INDv=as<NumericVector>(IND);
+  //NumericVector INDvi=floor(INDv);
+  IntegerVector columnNumbers(k);
+
+  for (int idx = 0; idx < k; ++idx) {
+    int i = (IND(0, idx));
+    int j = (IND(1, idx));
+
+    // Ensure i <= j, as per the problem statement
+    if (i > j) {
+      std::swap(i, j);
+    }
+
+    // Calculate the column number
+    //int column = ((i - 1) * (2 * p - i + 2)) / 2 + (j - i);
+
+    int column;
+    if(i==0){
+      column=j+1;
+    }
+    else{
+    column= (i - 1) * (2 * p - i) / 2 + j;
+    }
+    columnNumbers[idx] = column;
+  }
+
+  return columnNumbers;
+}
 
 // [[Rcpp::export]]
 List pair_search4(NumericVector x, NumericVector y) {
@@ -373,11 +410,67 @@ List uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
 }
 
 
+// [[Rcpp::export]]
+IntegerVector stl_sort(NumericVector x) {
+  IntegerVector y= as<IntegerVector>(clone(x));
+  std::sort(y.begin(), y.end());
+  return y;
+}
+
+// [[Rcpp::export]]
+List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
+                  IntegerVector a_sorted_values, IntegerVector b_sorted_values) {
+  int n= a_positions.size();
+  int m= b_positions.size();
+  List list(n);
+  int a=0, b=0, z= 0;
+  while (a < n && b < m) {
+    double a_val= a_sorted_values[a];
+    double b_val= b_sorted_values[b];
+
+    if (a_val < b_val) {
+      a++;
+      continue;
+    }
+
+    if (a_val > b_val) {
+      b++;
+      continue;
+    }
+
+    int a_end= n;
+    for (int i= a+1; i < n; i++) {
+      if (a_sorted_values[i] != a_val) {
+        a_end = i;
+        break;
+      }
+    }
+
+    int b_end = m;
+    for (int i = b+ 1; i < m; i++) {
+      if (b_sorted_values[i] != b_val) {
+        b_end = i;
+        break;
+      }
+    }
+    if((a<=a_end-1) && (b<=b_end-1)){
+      list[z]= expandGrid(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
+    }
+    z++;
+
+    a = a_end;
+    b = b_end;
+  }
+
+  return list[Range(0, z- 1)];
+}
+
+
 
 
 //  perform weighted sampling from matrices X and Z
 // [[Rcpp::export]]
-List weightedSampling(NumericMatrix X, NumericVector Y, int p, int k) {
+NumericMatrix weightedSampling(NumericMatrix X, NumericVector Y, int p, int k) {
   int n = X.nrow(); // assuming the number of rows is equal to the size of Y
   int p1=X.ncol();
   NumericMatrix Z(n,p1);
@@ -390,7 +483,7 @@ List weightedSampling(NumericMatrix X, NumericVector Y, int p, int k) {
 
   // normalize weights to form a probability distribution
   NumericVector normalizedWeights = normalizeL1(Y);
-
+  NumericVector luck(0);
   List result; // to store results
 
   for (int j = 0; j < k; ++j) {
@@ -408,10 +501,27 @@ List weightedSampling(NumericMatrix X, NumericVector Y, int p, int k) {
     }
 
     // append sampled submatrices to the result list
-    result.push_back(pair_search4(as<NumericVector>(binaryToInt(sampledX)),as<NumericVector>(sampledZ)));
-  }
+    //result.push_back(as<NumericVector>(sampledZ));
+    //result.push_back(pair_search4(as<NumericVector>(binaryToInt(sampledX)),as<NumericVector>(binaryToInt(sampledZ))));
+    NumericVector a=as<NumericVector>(binaryToInt(sampledX));
+    NumericVector b=as<NumericVector>(binaryToInt(sampledZ));
+    List ps=pairsearch11(sorted_index_vector(a),sorted_index_vector(b), stl_sort(a),stl_sort(b));
+    int s=ps.size();
+    for(int i=0;i<s;++i){
+      IntegerMatrix pr=(ps[i]);
+      NumericVector pv=cantor_map(as<NumericMatrix>(pr));
+      for(int j=0;j<pv.size();++j){
+       luck.push_back(pv[i]);
+       //luck.attr("dim")=Dimension(2,int(luck.length()/2));
+       }
 
-  return result;
+    }
+
+    //result.push_back(pairsearch11 (sorted_index_vector(a),sorted_index_vector(b), stl_sort(a),stl_sort(b) ));
+  }
+  //luck.attr("dim")=Dimension(2,int(luck.length()/2));
+  return inverse_cantor_map(luck);
+  //return result;
 }
 
 //function to get unique pairs
@@ -952,12 +1062,19 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
   return List::create(Named("beta") = beta, Named("theta") = theta);
 }
 
+// [[Rcpp::export]]
+IntegerVector ck(IntegerMatrix s){
+  return as<IntegerVector>(s);
+}
+
+
 /***R
 # Example usage in R
 #set.seed(123)
 n <- 100
 p <- 5
 X <- matrix(sample(1:100, n * p, replace = TRUE), n, p)
+
 #<-normalizeMatrix(X)
 beta_true <- c(0, 1, 0, 2, 0)
 theta_true <- c(0, 1,6,8, 99,88,61,43,8,0,0,80,48,0,0)
@@ -1102,33 +1219,39 @@ List computesolutionxyz(NumericMatrix X, NumericVector Y, NumericVector lambda_g
 
     //incorporating lasso
     List eqpairs=transform_pairs(pair_search4(residual, X));
+    IntegerVector eqpairs1=getInteractionColumn(getunique(weightedSampling(X,residual,3,3)), p);
+       //getunique(weightedSampling(X,residual,3,3));
 
     // Interaction terms
     int num_interactions = p * (p + 1) / 2;
-    int count = 0;
-    int pairc=0;
-    bool exin=false;
-    for (int k = 0; k < p; ++k) {
-      for (int l = k; l < p; ++l) {
-        IntegerVector pair=as<IntegerVector>(eqpairs[pairc]);
-        if(k==pair[1] && l==pair[2]){
-          V.push_back(count+1);
-        }
-        pairc++;
-        if(pairc==eqpairs.size()){
-          exin=true;
-          break;
-        }
+    for(int i=0; i< eqpairs.size();++i){
+      V.push_back(i);
+    }
+    //for (int k = 0; k < p; ++k) {
+
+      //for (int l = k; l < p; ++l) {
+
+        //this is not computationally efficient
+        //what are you thinking
+        //IntegerVector pair=as<IntegerVector>(eqpairs[pairc]);
+        //if(k==pair[1] && l==pair[2]){
+          //;
+        //}
+        //pairc++;
+        //if(pairc==eqpairs.size()){
+        //  exin=true;
+        //  break;
+        //}
         //double W_kl_residual = sum(X(_, k) * X(_, l) * residual) / n;
         //if (std::abs(W_kl_residual) > lambda) {
         //  V.push_back(count + 1);
         //}
-        count++;
-      }
-      if(exin){
-        break;
-      }
-    }
+        //ount++;
+      //}
+      //if(exin){
+      //  break;
+      //}
+    //}
 
     // If U and V are empty, stop updating A and B
     if (U.size() == 0 && V.size() == 0) {
@@ -1753,55 +1876,6 @@ List pairsearch10(IntegerVector a_positions, IntegerVector b_positions,
     }
     if((a<=a_end-1) && (b<=b_end-1)){
     list[z]=expandGrido(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
-    }
-    z++;
-
-    a = a_end;
-    b = b_end;
-  }
-
-  return list[Range(0, z- 1)];
-}
-
-
-// [[Rcpp::export]]
-List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
-                 IntegerVector a_sorted_values, IntegerVector b_sorted_values) {
-  int n= a_positions.size();
-  int m= b_positions.size();
-  List list(n);
-  int a=0, b=0, z= 0;
-  while (a < n && b < m) {
-    double a_val= a_sorted_values[a];
-    double b_val= b_sorted_values[b];
-
-    if (a_val < b_val) {
-      a++;
-      continue;
-    }
-
-    if (a_val > b_val) {
-      b++;
-      continue;
-    }
-
-    int a_end= n;
-    for (int i= a+1; i < n; i++) {
-      if (a_sorted_values[i] != a_val) {
-        a_end = i;
-        break;
-      }
-    }
-
-    int b_end = m;
-    for (int i = b+ 1; i < m; i++) {
-      if (b_sorted_values[i] != b_val) {
-        b_end = i;
-        break;
-      }
-    }
-    if((a<=a_end-1) && (b<=b_end-1)){
-      list[z]= expandGrid(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
     }
     z++;
 

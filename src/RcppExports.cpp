@@ -352,6 +352,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getInteractionColumn
+IntegerVector getInteractionColumn(NumericMatrix IND, int p);
+RcppExport SEXP _testxyz1_getInteractionColumn(SEXP INDSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type IND(INDSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(getInteractionColumn(IND, p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // pair_search4
 List pair_search4(NumericVector x, NumericVector y);
 RcppExport SEXP _testxyz1_pair_search4(SEXP xSEXP, SEXP ySEXP) {
@@ -378,8 +390,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// stl_sort
+IntegerVector stl_sort(NumericVector x);
+RcppExport SEXP _testxyz1_stl_sort(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(stl_sort(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pairsearch11
+List pairsearch11(IntegerVector a_positions, IntegerVector b_positions, IntegerVector a_sorted_values, IntegerVector b_sorted_values);
+RcppExport SEXP _testxyz1_pairsearch11(SEXP a_positionsSEXP, SEXP b_positionsSEXP, SEXP a_sorted_valuesSEXP, SEXP b_sorted_valuesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type a_positions(a_positionsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b_positions(b_positionsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type a_sorted_values(a_sorted_valuesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b_sorted_values(b_sorted_valuesSEXP);
+    rcpp_result_gen = Rcpp::wrap(pairsearch11(a_positions, b_positions, a_sorted_values, b_sorted_values));
+    return rcpp_result_gen;
+END_RCPP
+}
 // weightedSampling
-List weightedSampling(NumericMatrix X, NumericVector Y, int p, int k);
+NumericMatrix weightedSampling(NumericMatrix X, NumericVector Y, int p, int k);
 RcppExport SEXP _testxyz1_weightedSampling(SEXP XSEXP, SEXP YSEXP, SEXP pSEXP, SEXP kSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -502,6 +539,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     rcpp_result_gen = Rcpp::wrap(computesolution(Y, X, nzero_indices_beta, nzero_indices_theta, lambda, max_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ck
+IntegerVector ck(IntegerMatrix s);
+RcppExport SEXP _testxyz1_ck(SEXP sSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type s(sSEXP);
+    rcpp_result_gen = Rcpp::wrap(ck(s));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -878,20 +926,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// pairsearch11
-List pairsearch11(IntegerVector a_positions, IntegerVector b_positions, IntegerVector a_sorted_values, IntegerVector b_sorted_values);
-RcppExport SEXP _testxyz1_pairsearch11(SEXP a_positionsSEXP, SEXP b_positionsSEXP, SEXP a_sorted_valuesSEXP, SEXP b_sorted_valuesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type a_positions(a_positionsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type b_positions(b_positionsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type a_sorted_values(a_sorted_valuesSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type b_sorted_values(b_sorted_valuesSEXP);
-    rcpp_result_gen = Rcpp::wrap(pairsearch11(a_positions, b_positions, a_sorted_values, b_sorted_values));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_findindexitq", (DL_FUNC) &_testxyz1_findindexitq, 2},
@@ -923,8 +957,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_inverse_cantor_map", (DL_FUNC) &_testxyz1_inverse_cantor_map, 1},
     {"_testxyz1_normalizeL1", (DL_FUNC) &_testxyz1_normalizeL1, 1},
     {"_testxyz1_transformY", (DL_FUNC) &_testxyz1_transformY, 1},
+    {"_testxyz1_getInteractionColumn", (DL_FUNC) &_testxyz1_getInteractionColumn, 2},
     {"_testxyz1_pair_search4", (DL_FUNC) &_testxyz1_pair_search4, 2},
     {"_testxyz1_uniformSampling", (DL_FUNC) &_testxyz1_uniformSampling, 4},
+    {"_testxyz1_stl_sort", (DL_FUNC) &_testxyz1_stl_sort, 1},
+    {"_testxyz1_pairsearch11", (DL_FUNC) &_testxyz1_pairsearch11, 4},
     {"_testxyz1_weightedSampling", (DL_FUNC) &_testxyz1_weightedSampling, 4},
     {"_testxyz1_getunique", (DL_FUNC) &_testxyz1_getunique, 1},
     {"_testxyz1_nzeroindices", (DL_FUNC) &_testxyz1_nzeroindices, 1},
@@ -934,6 +971,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_lassorisky2", (DL_FUNC) &_testxyz1_lassorisky2, 7},
     {"_testxyz1_lassoInteractions", (DL_FUNC) &_testxyz1_lassoInteractions, 7},
     {"_testxyz1_computesolution", (DL_FUNC) &_testxyz1_computesolution, 7},
+    {"_testxyz1_ck", (DL_FUNC) &_testxyz1_ck, 1},
     {"_testxyz1_normalizeMatrix", (DL_FUNC) &_testxyz1_normalizeMatrix, 1},
     {"_testxyz1_normalizeVector", (DL_FUNC) &_testxyz1_normalizeVector, 1},
     {"_testxyz1_size", (DL_FUNC) &_testxyz1_size, 1},
@@ -964,7 +1002,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_equalpairs2", (DL_FUNC) &_testxyz1_equalpairs2, 5},
     {"_testxyz1_expandGrido", (DL_FUNC) &_testxyz1_expandGrido, 2},
     {"_testxyz1_pairsearch10", (DL_FUNC) &_testxyz1_pairsearch10, 4},
-    {"_testxyz1_pairsearch11", (DL_FUNC) &_testxyz1_pairsearch11, 4},
     {NULL, NULL, 0}
 };
 
