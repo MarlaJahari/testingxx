@@ -357,3 +357,36 @@ IntegerMatrix test3(NumericVector x, IntegerVector sorted_indexes) {
     i=j;}// jump to next (non-repeated) value
 
   return m0;}
+
+// [[Rcpp::export]]
+List transform_pairs(List nested_pairs) {
+  int n = nested_pairs.size();
+  List result(n);
+
+  for (int i = 0; i < n; ++i) {
+    List pair = nested_pairs[i];
+    IntegerVector vec(2);
+    vec[0] = as<IntegerVector>(pair[0])[0];
+    vec[1] = as<IntegerVector>(pair[1])[0];
+    result[i] = vec;
+  }
+
+  return result;
+}
+
+
+//IntegerVector tecxt(NumericVector X, NumericVector Y){
+//  List eqpairs=transform_pairs(pair_search4(Y, X));
+///  return as<IntegerVector>(eqpairs[1]);
+
+//}
+
+
+// [[Rcpp::export]]
+NumericVector go(int n, int p) {
+  NumericVector vec(n); // Create a NumericVector with size n
+  std::fill(vec.begin(), vec.end(), p); // Set all elements to the value p
+  return vec;
+}
+
+

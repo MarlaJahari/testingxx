@@ -53,6 +53,14 @@ test3 <- function(x, sorted_indexes) {
     .Call(`_testxyz1_test3`, x, sorted_indexes)
 }
 
+transform_pairs <- function(nested_pairs) {
+    .Call(`_testxyz1_transform_pairs`, nested_pairs)
+}
+
+go <- function(n, p) {
+    .Call(`_testxyz1_go`, n, p)
+}
+
 FibCpp0 <- function(n) {
     .Call(`_testxyz1_FibCpp0`, n)
 }
@@ -125,16 +133,16 @@ pair_search4 <- function(x, y) {
     .Call(`_testxyz1_pair_search4`, x, y)
 }
 
-uniformSampling <- function(X, Y, p, k) {
-    .Call(`_testxyz1_uniformSampling`, X, Y, p, k)
-}
-
 stl_sort <- function(x) {
     .Call(`_testxyz1_stl_sort`, x)
 }
 
 pairsearch11 <- function(a_positions, b_positions, a_sorted_values, b_sorted_values) {
     .Call(`_testxyz1_pairsearch11`, a_positions, b_positions, a_sorted_values, b_sorted_values)
+}
+
+uniformSampling <- function(X, Y, p, k) {
+    .Call(`_testxyz1_uniformSampling`, X, Y, p, k)
 }
 
 weightedSampling <- function(X, Y, p, k) {
@@ -153,10 +161,6 @@ softThreshold <- function(z, gamma) {
     .Call(`_testxyz1_softThreshold`, z, gamma)
 }
 
-co <- function(v) {
-    .Call(`_testxyz1_co`, v)
-}
-
 lassorisky <- function(Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter = 1000L, tol = 1e-6) {
     .Call(`_testxyz1_lassorisky`, Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter, tol)
 }
@@ -165,16 +169,12 @@ lassorisky2 <- function(Y, X, lambda, nzero_indices_beta, nzero_indices_theta, m
     .Call(`_testxyz1_lassorisky2`, Y, X, lambda, nzero_indices_beta, nzero_indices_theta, max_iter, tol)
 }
 
-lassoInteractions <- function(Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter = 1000L, tol = 1e-6) {
-    .Call(`_testxyz1_lassoInteractions`, Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter, tol)
+lassorisky3 <- function(Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter = 1000L, tol = 1e-6) {
+    .Call(`_testxyz1_lassorisky3`, Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter, tol)
 }
 
 computesolution <- function(Y, X, nzero_indices_beta, nzero_indices_theta, lambda, max_iter = 1000L, tol = 1e-6) {
     .Call(`_testxyz1_computesolution`, Y, X, nzero_indices_beta, nzero_indices_theta, lambda, max_iter, tol)
-}
-
-ck <- function(s) {
-    .Call(`_testxyz1_ck`, s)
 }
 
 normalizeMatrix <- function(X) {
@@ -189,16 +189,8 @@ size <- function(lm) {
     .Call(`_testxyz1_size`, lm)
 }
 
-transform_pairs <- function(nested_pairs) {
-    .Call(`_testxyz1_transform_pairs`, nested_pairs)
-}
-
-tecxt <- function(X, Y) {
-    .Call(`_testxyz1_tecxt`, X, Y)
-}
-
-computesolutionxyz <- function(X, Y, lambda_grid) {
-    .Call(`_testxyz1_computesolutionxyz`, X, Y, lambda_grid)
+computesolutionxyz <- function(X, Y, lambda_grid, binary = FALSE) {
+    .Call(`_testxyz1_computesolutionxyz`, X, Y, lambda_grid, binary)
 }
 
 generate_interaction_matrix <- function(X) {
@@ -265,10 +257,6 @@ random_binary_vector <- function(n) {
     .Call(`_testxyz1_random_binary_vector`, n)
 }
 
-go <- function(n, p) {
-    .Call(`_testxyz1_go`, n, p)
-}
-
 r <- function(n, minValue = 0L, maxValue = 10L) {
     .Call(`_testxyz1_r`, n, minValue, maxValue)
 }
@@ -291,9 +279,5 @@ equalpairs2 <- function(u, v, ou, ov, max_number_of_pairs) {
 
 expandGrido <- function(vec1, vec2) {
     .Call(`_testxyz1_expandGrido`, vec1, vec2)
-}
-
-pairsearch10 <- function(a_positions, b_positions, a_sorted_values, b_sorted_values) {
-    .Call(`_testxyz1_pairsearch10`, a_positions, b_positions, a_sorted_values, b_sorted_values)
 }
 

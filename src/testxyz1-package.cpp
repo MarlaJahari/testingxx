@@ -317,12 +317,12 @@ IntegerVector getInteractionColumn(NumericMatrix IND, int p) {
     int i = (IND(0, idx));
     int j = (IND(1, idx));
 
-    // Ensure i <= j, as per the problem statement
+    //ensure i <= j, as is always the case
     if (i > j) {
       std::swap(i, j);
     }
 
-    // Calculate the column number
+    //calculating the column number
     //int column = ((i - 1) * (2 * p - i + 2)) / 2 + (j - i);
 
     int column;
@@ -374,41 +374,6 @@ List pair_search4(NumericVector x, NumericVector y) {
     i=j;}// jump to next (non-repeated) value
 
   return list;}
-
-//  perform uniform sampling from matrices X and Z, for the binary case
-// [[Rcpp::export]]
-List uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
-  int n= X.nrow(); // assuming the number of rows is equal to the size of Y
-  int p1= X.ncol();
-  NumericMatrix Z(n,p1);
-
-  for (int i=0; i<n; ++i) {
-    for (int l=0; l < p1; ++l) {
-      Z(i,l)=Y[i]*X(i,l);}
-  }
-
-  List result; // to store results
-
-  for (int j = 0; j < k; ++j) {
-    IntegerVector sampledIndices=Rcpp::sample(n, p, false);
-    std::sort(sampledIndices.begin(), sampledIndices.end());
-    // initialize the result matrices for sampled rows
-    NumericMatrix sampledX(p, X.ncol());
-    NumericMatrix sampledZ(p, Z.ncol());
-
-    // populate sampled submatrices using sampled indices
-    for (int i = 0; i < p; ++i) {
-      sampledX.row(i) = X.row(sampledIndices[i] - 1); // Adjust for 0-based indexing
-      sampledZ.row(i) = Z.row(sampledIndices[i] - 1);
-    }
-
-    // append sampled submatrices to the result list
-    result.push_back(pair_search4(as<NumericVector>(binaryToInt(sampledZ)),as<NumericVector>(binaryToInt(sampledX))));
-  }
-
-  return result;
-}
-
 
 // [[Rcpp::export]]
 IntegerVector stl_sort(NumericVector x) {
@@ -465,6 +430,65 @@ List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
   return list[Range(0, z- 1)];
 }
 
+//  perform uniform sampling from matrices X and Z, for the binary case
+// [[Rcpp::export]]
+NumericMatrix uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
+  int n= X.nrow(); // assuming the number of rows is equal to the size of Y
+  int p1= X.ncol();
+  NumericMatrix Z(n,p1);
+  NumericVector luck(0);
+
+
+  for (int i=0; i<n; ++i) {
+    for (int l=0; l < p1; ++l) {
+      Z(i,l)=Y[i]*X(i,l);}
+  }
+
+  //List result; // to store results
+
+  for (int j = 0; j < k; ++j) {
+    IntegerVector sampledIndices=Rcpp::sample(n, p, false);
+    std::sort(sampledIndices.begin(), sampledIndices.end());
+    // initialize the result matrices for sampled rows
+    NumericMatrix sampledX(p, X.ncol());
+    NumericMatrix sampledZ(p, Z.ncol());
+
+    // populate sampled submatrices using sampled indices
+    for (int i = 0; i < p; ++i) {
+      sampledX.row(i) = X.row(sampledIndices[i] - 1); // Adjust for 0-based indexing
+      sampledZ.row(i) = Z.row(sampledIndices[i] - 1);
+    }
+
+    NumericVector a=as<NumericVector>(binaryToInt(sampledX));
+    NumericVector b=as<NumericVector>(binaryToInt(sampledZ));
+    List ps=pairsearch11(sorted_index_vector(a),sorted_index_vector(b), stl_sort(a),stl_sort(b));
+    int s=ps.size();
+    for(int i=0;i<s;++i){
+      IntegerMatrix pr=(ps[i]);
+      NumericVector pv=cantor_map(as<NumericMatrix>(pr));
+      for(int j=0;j<pv.size();++j){
+        luck.push_back(pv[i]);
+        //luck.attr("dim")=Dimension(2,int(luck.length()/2));
+      }
+
+    }
+
+    //result.push_back(pairsearch11 (sorted_index_vector(a),sorted_index_vector(b), stl_sort(a),stl_sort(b) ));
+  }
+  //luck.attr("dim")=Dimension(2,int(luck.length()/2));
+    return inverse_cantor_map(luck);
+  //return result;
+
+    // append sampled submatrices to the result list
+    //result.push_back(pair_search4(as<NumericVector>(binaryToInt(sampledZ)),as<NumericVector>(binaryToInt(sampledX))));
+  //}
+
+  //return result;
+}
+
+
+
+
 
 
 
@@ -484,7 +508,7 @@ NumericMatrix weightedSampling(NumericMatrix X, NumericVector Y, int p, int k) {
   // normalize weights to form a probability distribution
   NumericVector normalizedWeights = normalizeL1(Y);
   NumericVector luck(0);
-  List result; // to store results
+  //List result; // to store results
 
   for (int j = 0; j < k; ++j) {
     // generate p weighted random indexes from 1 to n
@@ -568,11 +592,6 @@ double softThreshold(double z, double gamma) {
   }
 }
 
-// [[Rcpp::export]]
-NumericVector co(int v){
-  NumericVector ty(v);
-  return ty;
-}
 
 
 // [[Rcpp::export]]
@@ -585,7 +604,7 @@ List lassorisky(NumericVector Y, NumericMatrix X, double lambda, IntegerVector n
   NumericVector beta_old(p);
   NumericVector theta_old(num_interactions);
   int nzerobet=nzero_indices_beta.size();
-  int nzerothet=nzero_indices_theta.size();
+  //int nzerothet=nzero_indices_theta.size();
 
 //  for(int i=0;i<zerobet;++i){
 //    beta[zero_indices_beta[i]-1]=0;
@@ -707,7 +726,7 @@ List lassorisky2(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
   NumericVector beta_old(p);
   NumericVector theta_old(num_interactions);
   int nzerobet = nzero_indices_beta.size();
-  int nzerothet = nzero_indices_theta.size();
+  //int nzerothet = nzero_indices_theta.size();
 
   for (int iter = 0; iter < max_iter; ++iter) {
     std::copy(beta.begin(), beta.end(), beta_old.begin());
@@ -737,7 +756,7 @@ List lassorisky2(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
       }
     }
 
-    // Update beta
+    //updating beta
     for (int b = 0; b < nzerobet; ++b) {
       int j = nzero_indices_beta[b] - 1;
       double X_jY = 0;
@@ -752,7 +771,7 @@ List lassorisky2(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
       beta[j] = softThreshold(X_jY / X_jX_j, lambda / X_jX_j);
     }
 
-    // Update theta
+    //updating theta
     index = 0;
     for (int k = 0; k < p; ++k) {
       for (int l = k; l < p; ++l) {
@@ -770,7 +789,7 @@ List lassorisky2(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
       }
     }
 
-    // Check for convergence
+    //checking for convergence
     double max_diff = 0;
     for (int j = 0; j < p; ++j) {
       max_diff = std::max(max_diff, std::abs(beta[j] - beta_old[j]));
@@ -788,7 +807,7 @@ List lassorisky2(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
 }
 
 // [[Rcpp::export]]
-List lassoInteractions(NumericVector Y, NumericMatrix X, double lambda, IntegerVector zero_indices_beta, IntegerVector zero_indices_theta, int max_iter = 1000, double tol = 1e-6) {
+List lassorisky3(NumericVector Y, NumericMatrix X, double lambda, IntegerVector zero_indices_beta, IntegerVector zero_indices_theta, int max_iter = 1000, double tol = 1e-6) {
   int n = X.nrow();
   int p = X.ncol();
   int num_interactions = p * (p + 1) / 2;
@@ -796,8 +815,8 @@ List lassoInteractions(NumericVector Y, NumericMatrix X, double lambda, IntegerV
   NumericVector theta(num_interactions);
   NumericVector beta_old(p);
   NumericVector theta_old(num_interactions);
-  int zerobet=zero_indices_beta.size();
-  int zerothet=zero_indices_theta.size();
+  //int zerobet=zero_indices_beta.size();
+  //int zerothet=zero_indices_theta.size();
 
   //  for(int i=0;i<zerobet;++i){
   //    beta[zero_indices_beta[i]-1]=0;
@@ -917,7 +936,7 @@ NumericMatrix createInteractionMatrix(NumericMatrix X, IntegerVector indices) {
   for (int idx = 0; idx < k; ++idx) {
     int interactionIndex = indices[idx];
 
-    // Find the column indices (i, j) for the interactionIndex
+    //finding the column indices (i, j) for the interactionIndex
     int i = 0, j = 0, count = 0;
     bool found = false;
     for (i = 0; i < p; ++i) {
@@ -931,7 +950,7 @@ NumericMatrix createInteractionMatrix(NumericMatrix X, IntegerVector indices) {
       if (found) break;
     }
 
-    // Fill the interaction matrix with the product of the respective columns
+    //filling the interaction matrix with the product of the respective columns
     for (int row = 0; row < n; ++row) {
       interactionMatrix(row, idx) = X(row, i) * X(row, j);
     }
@@ -959,7 +978,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
 
     NumericVector residual = clone(Y);
 
-    // Subtract the contribution of beta coefficients
+    //subtracting the contribution of beta coefficients
     for (int b = 0; b < nzerobet; ++b) {
       int j = nzero_indices_beta[b] - 1;
       if (beta[j] != 0) {
@@ -972,7 +991,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
     for (int t = 0; t < nzerothet; ++t) {
       int index = nzero_indices_theta[t]-1;
 
-      // Find the column indices (i, j) for the interactionIndex
+      //Finding the column indices (i, j) for the interactionIndex
       int k = 0, l = 0, count = 0;
       bool found = false;
       for (k = 0; k < p; ++k) {
@@ -994,7 +1013,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
       }
     }
 
-    // Update beta
+    //update beta
     for (int b = 0; b < nzerobet; ++b) {
       int j = nzero_indices_beta[b] - 1;
       double X_jY = 0;
@@ -1012,11 +1031,11 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
       }
       }
 
-    // Update theta
+    //update theta
     for (int t = 0; t < nzerothet; ++t) {
       int index = nzero_indices_theta[t]-1;
 
-      // Find the column indices (i, j) for the interactionIndex
+      //find the column indices (i, j) for the interactionIndex
       int k = 0, l = 0, count = 0;
       bool found = false;
       for (k = 0; k < p; ++k) {
@@ -1045,7 +1064,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
       }
       }
 
-    // Check for convergence
+    //checkingg for convergence
     double max_diff = 0;
     for (int j = 0; j < p; ++j) {
       max_diff = std::max(max_diff, std::abs(beta[j] - beta_old[j]));
@@ -1062,31 +1081,26 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
   return List::create(Named("beta") = beta, Named("theta") = theta);
 }
 
-// [[Rcpp::export]]
-IntegerVector ck(IntegerMatrix s){
-  return as<IntegerVector>(s);
-}
 
+///***R
+//# Example usage in R
+//#set.seed(123)
+//n <- 100
+//p <- 5
+//X <- matrix(sample(1:100, n * p, replace = TRUE), n, p)
 
-/***R
-# Example usage in R
-#set.seed(123)
-n <- 100
-p <- 5
-X <- matrix(sample(1:100, n * p, replace = TRUE), n, p)
+//#<-normalizeMatrix(X)
+//beta_true <- c(0, 1, 0, 2, 0)
+//theta_true <- c(0, 1,6,8, 99,88,61,43,8,0,0,80,48,0,0)
+//Y <- X %*% beta_true + generate_interaction_matrix(X)%*%theta_true #+ rnorm(n)
+//lambda <- 0.1
+//zero_indices_beta <- c(2,4)
+//zero_indices_theta <- c(2,3,4,5,6, 7,8, 9, 12, 13)
 
-#<-normalizeMatrix(X)
-beta_true <- c(0, 1, 0, 2, 0)
-theta_true <- c(0, 1,6,8, 99,88,61,43,8,0,0,80,48,0,0)
-Y <- X %*% beta_true + generate_interaction_matrix(X)%*%theta_true #+ rnorm(n)
-lambda <- 0.1
-zero_indices_beta <- c(2,4)                          #R is 1-indexed, but C++ is 0-indexed
-zero_indices_theta <- c(2,3,4,5,6, 7,8, 9, 12, 13)   #R is 1-indexed, but C++ is 0-indexed
-
-#//result <- lassoInteractions(Y, X, lambda, zero_indices_beta, zero_indices_theta)
-#//print(result$beta)
-#//print(result$theta)
-*/
+//result <- lassoInteractions(Y, X, lambda, zero_indices_beta, zero_indices_theta)
+//print(result$beta)
+//print(result$theta)
+//*/
 //
 
 // [[Rcpp::export]]
@@ -1105,7 +1119,7 @@ NumericMatrix normalizeMatrix(NumericMatrix X) {
       if (sd_col != 0) {
         X_normalized(i, j) = (X(i, j) - mean_col) / sd_col;
       } else {
-        X_normalized(i, j) = 0; // If sd is 0, all elements are the same, hence normalized to 0
+        X_normalized(i, j) = 0; // If sd is 0, all elements are the same nd hence normalized to 0
       }
     }
   }
@@ -1124,7 +1138,7 @@ NumericVector normalizeVector(NumericVector Y) {
     if (sd_Y != 0) {
       Y_normalized[i] = (Y[i] - mean_Y) / sd_Y;
     } else {
-      Y_normalized[i] = 0; // If sd is 0, all elements are the same, hence normalized to 0
+      Y_normalized[i] = 0; // If sd is 0, all elements are same so normalized to 0
     }
   }
 
@@ -1136,56 +1150,36 @@ int size(NumericVector lm){
   return lm.size();
 }
 
-// [[Rcpp::export]]
-List transform_pairs(List nested_pairs) {
-  int n = nested_pairs.size();
-  List result(n);
 
-  for (int i = 0; i < n; ++i) {
-    List pair = nested_pairs[i];
-    IntegerVector vec(2);
-    vec[0] = as<IntegerVector>(pair[0])[0];
-    vec[1] = as<IntegerVector>(pair[1])[0];
-    result[i] = vec;
-  }
 
-  return result;
-}
 
 // [[Rcpp::export]]
-IntegerVector tecxt(NumericVector X, NumericVector Y){
-  List eqpairs=transform_pairs(pair_search4(Y, X));
-  return as<IntegerVector>(eqpairs[1]);
-
-}
-
-// [[Rcpp::export]]
-List computesolutionxyz(NumericMatrix X, NumericVector Y, NumericVector lambda_grid) {
+List computesolutionxyz(NumericMatrix X, NumericVector Y, NumericVector lambda_grid, bool binary=false) {
   int L = lambda_grid.size();
   int n = X.nrow();
   int p = X.ncol();
 
   List lasso_solutions(L);
 
-  IntegerVector A(1);
-  IntegerVector B(1);
+  IntegerVector A(0);
+  IntegerVector B(0);
 
   for (int l = 0; l < L; ++l) {
     double lambda = lambda_grid[l];
 
-    // Compute Lasso solution
+    //compute LASSO solution
     List solution = computesolution(Y, X, A, B, lambda);
     NumericVector beta = solution["beta"];
     NumericVector theta = solution["theta"];
 
-    // Check KKT conditions
-    IntegerVector U;
-    IntegerVector V;
+    //check KKT conditions/not considering additional vecs
+    //IntegerVector U;
+    //IntegerVector V;
 
-    // Compute residuals
+    //compute residuals to push necessary indices
     NumericVector residual = clone(Y);
     for (int j = 0; j < A.size(); ++j) {
-      //int col = A[j] - 1;  // Convert 1-based index to 0-based
+      //int col = A[j] - 1;  //convert 1-based index to 0-based
       //double beta_j = beta[j];
       for (int i = 0; i < n; ++i) {
         residual[i] -= X(i, A[j] - 1) * beta[j];
@@ -1197,7 +1191,7 @@ List computesolutionxyz(NumericMatrix X, NumericVector Y, NumericVector lambda_g
 
     for (int k = 0; k < p; ++k) {
       for (int l = k; l < p; ++l) {
-        // Check if the current interaction index is in B
+        //checking if the current interaction index is in B
         if (B_index < B.size() && B[B_index] == interaction_index + 1) {  // +1 to convert to 1-based index
           //double theta_kl = theta[B_index];
           for (int i = 0; i < n; ++i) {
@@ -1209,30 +1203,36 @@ List computesolutionxyz(NumericMatrix X, NumericVector Y, NumericVector lambda_g
       }
     }
 
-    // Update U and V based on KKT conditions
+    //updating U and V based on KKT conditions
     for (int k = 0; k < p; ++k) {
       double XT_k_residual = sum(X(_, k) * residual) / n;
       if (std::abs(XT_k_residual) > lambda) {
-        U.push_back(k + 1);
+        A.push_back(k + 1);
       }
     }
 
+    IntegerVector eqpairs1;
     //incorporating lasso
-    List eqpairs=transform_pairs(pair_search4(residual, X));
-    IntegerVector eqpairs1=getInteractionColumn(getunique(weightedSampling(X,residual,3,3)), p);
+    //List eqpairs=transform_pairs(pair_search4(residual, X));
+    if(binary){
+    eqpairs1=getInteractionColumn(getunique(uniformSampling(X,residual,3,3)), p);}
+    else{
+    eqpairs1=getInteractionColumn(getunique(weightedSampling(X,residual,3,3)), p);}
+
+
        //getunique(weightedSampling(X,residual,3,3));
 
-    // Interaction terms
-    int num_interactions = p * (p + 1) / 2;
-    for(int i=0; i< eqpairs.size();++i){
-      V.push_back(i);
+    //interaction terms
+    //int num_interactions = p * (p + 1) / 2;
+    for(int i=0; i< eqpairs1.size();++i){
+      B.push_back(i);
     }
     //for (int k = 0; k < p; ++k) {
 
       //for (int l = k; l < p; ++l) {
 
         //this is not computationally efficient
-        //what are you thinking
+        //what
         //IntegerVector pair=as<IntegerVector>(eqpairs[pairc]);
         //if(k==pair[1] && l==pair[2]){
           //;
@@ -1254,22 +1254,22 @@ List computesolutionxyz(NumericMatrix X, NumericVector Y, NumericVector lambda_g
     //}
 
     // If U and V are empty, stop updating A and B
-    if (U.size() == 0 && V.size() == 0) {
-      lasso_solutions[l] = List::create(Named("beta") = beta, Named("theta") = theta);
-      break;
-    } else {
+    //if (U.size() == 0 && V.size() == 0) {
+    //  lasso_solutions[l] = List::create(Named("beta") = beta, Named("theta") = theta);
+    //  break;
+    //} else {
       // Update A and B
-      for (int u = 0; u < U.size(); ++u) {
-        if (std::find(A.begin(), A.end(), U[u]) == A.end()) {
-          A.push_back(U[u]);
-        }
-      }
-      for (int v = 0; v < V.size(); ++v) {
-        if (std::find(B.begin(), B.end(), V[v]) == B.end()) {
-          B.push_back(V[v]);
-        }
-      }
-    }
+      //for (int u = 0; u < U.size(); ++u) {
+      //  if (std::find(A.begin(), A.end(), U[u]) == A.end()) {
+      //    A.push_back(U[u]);
+      //  }
+      //}
+      //for (int v = 0; v < V.size(); ++v) {
+      //  if (std::find(B.begin(), B.end(), V[v]) == B.end()) {
+      //    B.push_back(V[v]);
+      //  }
+      //}
+    //}
 
     lasso_solutions[l] = List::create(Named("beta") = beta, Named("theta") = theta);
   }
@@ -1297,7 +1297,7 @@ NumericMatrix generate_interaction_matrix(NumericMatrix X) {
   int p = X.ncol();
   int num_interactions = p * (p + 1) / 2;
 
-  // Initialize the interaction matrix W
+  // Init the interaction matrix W
   NumericMatrix W(n, num_interactions);
 
   int col_idx = 0;
@@ -1433,7 +1433,7 @@ double interaction_strength(NumericMatrix X, NumericVector Y, int j, int k) {
   int p = X.ncol();
   double sum = 0.0;
 
-  // calculate Z(n x p) matrix
+  //calculate Z(n x p) matrix
   NumericMatrix Z(n, p);
   for (int i=0; i<n; ++i) {
     for (int l=0; l < p;++l) {
@@ -1441,7 +1441,7 @@ double interaction_strength(NumericMatrix X, NumericVector Y, int j, int k) {
     }
   }
 
-  // calculate the interaction strength gamma_jk
+  //calculate the interaction strength gamma_jk
   for (int i= 0; i< n; ++i) {
     // check if Yi = Xij * Xik
     if (Y[i]== X(i, j)*X(i, k)) {
@@ -1639,14 +1639,6 @@ NumericVector random_binary_vector(int n) {
 
 
 // [[Rcpp::export]]
-NumericVector go(int n, int p) {
-  NumericVector vec(n); // Create a NumericVector with size n
-  std::fill(vec.begin(), vec.end(), p); // Set all elements to the value p
-  return vec;
-}
-
-
-// [[Rcpp::export]]
 NumericVector r(int n, int minValue=0, int maxValue=10) {
   NumericVector result(n);
 
@@ -1838,53 +1830,6 @@ IntegerMatrix expandGrido(IntegerVector vec1, IntegerVector vec2) {
 
 
 
-// [[Rcpp::export]]
-List pairsearch10(IntegerVector a_positions, IntegerVector b_positions,
-                                    IntegerVector a_sorted_values, IntegerVector b_sorted_values) {
-  int n= a_positions.size();
-  int m= b_positions.size();
-  List list(n);
-  int a=0, b=0, z= 0;
-  while (a < n && b < m) {
-    double a_val= a_sorted_values[a];
-    double b_val= b_sorted_values[b];
-
-    if (a_val < b_val) {
-      a++;
-      continue;
-    }
-
-    if (a_val > b_val) {
-      b++;
-      continue;
-    }
-
-    int a_end= n;
-    for (int i= a+1; i < n; i++) {
-      if (a_sorted_values[i] != a_val) {
-        a_end = i;
-        break;
-      }
-    }
-
-    int b_end = m;
-    for (int i = b+ 1; i < m; i++) {
-      if (b_sorted_values[i] != b_val) {
-        b_end = i;
-        break;
-      }
-    }
-    if((a<=a_end-1) && (b<=b_end-1)){
-    list[z]=expandGrido(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
-    }
-    z++;
-
-    a = a_end;
-    b = b_end;
-  }
-
-  return list[Range(0, z- 1)];
-}
 
 
 
