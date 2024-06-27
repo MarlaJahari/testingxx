@@ -263,18 +263,18 @@ NumericMatrix inverse_cantor_map(NumericVector values) {
   int n = values.size();
   NumericMatrix result(2, n);
   for (int i=0; i<n; i++) {
-    double t= floor((-1 + sqrt(1+ 8*values[i]))/ 2);
-    double w= values[i] - 0.5 *t*(t + 1);
+    double w= floor((-1 + sqrt(1+ 8*values[i]))/ 2);
+    double t= (w*w +w)/2;//values[i] - 0.5 *t*(t + 1);
 
 
-    double x=floor(t-w);
+    double y=values[i]-t;
 
 
     //double x= t-w;
-    double y= floor(w);
+    double x= w-y;
 
-    result(0,i)=x;
-    result(1,i)=y;
+    result(0,i)=round(x);
+    result(1,i)=round(y);
 
   }
 
@@ -301,7 +301,7 @@ NumericVector transformY(NumericVector vec) {
   for (int i=0; i<vec.size(); ++i) {
     if (vec[i]<= 0) {vec[i] = 0;}
     else if(vec[i]==0){double ran=R::runif(0,1);vec[i] = (ran<0.5) ? 0 : 1;}
-    else {  vec[i] = 1;}
+    else {  vec[i]= 1;}
   }
   return vec;
 }
@@ -336,6 +336,31 @@ IntegerVector getInteractionColumn(NumericMatrix IND, int p) {
   }
 
   return columnNumbers;
+}
+
+// [[Rcpp::export]]
+NumericMatrix getInteractionIndices(IntegerVector columns, int p) {
+  int k = columns.size();
+  NumericMatrix indices(2, k);
+
+  for (int idx = 0; idx < k; ++idx) {
+    int column = columns[idx];
+
+    //reverse the process to get i and j
+    int i = 0;
+    while (column >= (i * (2 * p - i) / 2)) {
+      ++i;
+    }
+    --i;
+
+    int j = column - (i * (2 * p - i) / 2);
+
+    //store indices in the result matrix
+    indices(0, idx) = i;
+    indices(1, idx) = j;
+  }
+
+  return indices;
 }
 
 // [[Rcpp::export]]
@@ -389,6 +414,7 @@ List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
   int m= b_positions.size();
   List list(n);
   int a=0, b=0, z= 0;
+
   while (a < n && b < m) {
     double a_val= a_sorted_values[a];
     double b_val= b_sorted_values[b];
@@ -402,6 +428,7 @@ List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
       b++;
       continue;
     }
+
 
     int a_end= n;
     for (int i= a+1; i < n; i++) {
@@ -418,6 +445,7 @@ List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
         break;
       }
     }
+
     if((a<=a_end-1) && (b<=b_end-1)){
       list[z]= expandGrid(a_positions[Range(a,a_end-1)],b_positions[Range(b,b_end-1)]);//(a_positions[Range(a_pos,a_end-1)]);
     }
@@ -426,14 +454,36 @@ List pairsearch11(IntegerVector a_positions, IntegerVector b_positions,
     a = a_end;
     b = b_end;
   }
+  List ans;
+  if(z>=1){
+  ans=list[Range(0, z- 1)];
+  }
+  else{
+  ans=List();
+  }
+  return ans;}
 
-  return list[Range(0, z- 1)];
+//function to get unique pairs
+// [[Rcpp::export]]
+NumericMatrix getunique(NumericMatrix combined) {
+    // convert the combined matrix to a vector
+  NumericVector combinedVector = cantor_map(combined);
+
+    //sort the combined vector
+  std::sort(combinedVector.begin(), combinedVector.end());
+
+    //remove duplicates
+  NumericVector::iterator it = std::unique(combinedVector.begin(), combinedVector.end());
+  combinedVector.erase(it, combinedVector.end());
+  return inverse_cantor_map(combinedVector);
 }
 
-//  perform uniform sampling from matrices X and Z, for the binary case
+
+
+//perform uniform sampling from matrices X and Z, for the binary case
 // [[Rcpp::export]]
 NumericMatrix uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
-  int n= X.nrow(); // assuming the number of rows is equal to the size of Y
+  int n= X.nrow();  //assuming the number of rows is equal to the size of Y
   int p1= X.ncol();
   NumericMatrix Z(n,p1);
   NumericVector luck(0);
@@ -441,7 +491,8 @@ NumericMatrix uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
 
   for (int i=0; i<n; ++i) {
     for (int l=0; l < p1; ++l) {
-      Z(i,l)=Y[i]*X(i,l);}
+      Z(i,l)=Y[i]*X(i,l);
+      }
   }
 
   //List result; // to store results
@@ -449,20 +500,23 @@ NumericMatrix uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
   for (int j = 0; j < k; ++j) {
     IntegerVector sampledIndices=Rcpp::sample(n, p, false);
     std::sort(sampledIndices.begin(), sampledIndices.end());
-    // initialize the result matrices for sampled rows
+    //initialize the result matrices for sampled rows
     NumericMatrix sampledX(p, X.ncol());
     NumericMatrix sampledZ(p, Z.ncol());
 
-    // populate sampled submatrices using sampled indices
-    for (int i = 0; i < p; ++i) {
-      sampledX.row(i) = X.row(sampledIndices[i] - 1); // Adjust for 0-based indexing
+    //populate sampled submatrices using sampled indices
+    for (int i = 0; i < p; ++i){
+      sampledX.row(i) = X.row(sampledIndices[i] - 1); //for 0-based indexing
       sampledZ.row(i) = Z.row(sampledIndices[i] - 1);
     }
 
     NumericVector a=as<NumericVector>(binaryToInt(sampledX));
     NumericVector b=as<NumericVector>(binaryToInt(sampledZ));
+
     List ps=pairsearch11(sorted_index_vector(a),sorted_index_vector(b), stl_sort(a),stl_sort(b));
     int s=ps.size();
+
+    if(s>0){
     for(int i=0;i<s;++i){
       IntegerMatrix pr=(ps[i]);
       NumericVector pv=cantor_map(as<NumericMatrix>(pr));
@@ -472,11 +526,18 @@ NumericMatrix uniformSampling(NumericMatrix X, NumericVector Y, int p, int k) {
       }
 
     }
-
+    }
     //result.push_back(pairsearch11 (sorted_index_vector(a),sorted_index_vector(b), stl_sort(a),stl_sort(b) ));
   }
   //luck.attr("dim")=Dimension(2,int(luck.length()/2));
-    return inverse_cantor_map(luck);
+    NumericMatrix ans;
+    if(luck.size()>0){
+      ans=inverse_cantor_map(luck);
+    }
+    else{
+      ans=ans;
+    }
+    return ans;
   //return result;
 
     // append sampled submatrices to the result list
@@ -543,25 +604,19 @@ NumericMatrix weightedSampling(NumericMatrix X, NumericVector Y, int p, int k) {
 
     //result.push_back(pairsearch11 (sorted_index_vector(a),sorted_index_vector(b), stl_sort(a),stl_sort(b) ));
   }
+  NumericMatrix ans;
+  if(luck.size()>0){
+    ans=inverse_cantor_map(luck);
+  }
+  else{
+    ans=ans;
+  }
+  return ans;
   //luck.attr("dim")=Dimension(2,int(luck.length()/2));
-  return inverse_cantor_map(luck);
+  //return inverse_cantor_map(luck);
   //return result;
 }
 
-//function to get unique pairs
-// [[Rcpp::export]]
-NumericMatrix getunique(NumericMatrix combined) {
-  // convert the combined matrix to a vector
-  NumericVector combinedVector = cantor_map(combined);
-
-  // sort the combined vector
-  std::sort(combinedVector.begin(), combinedVector.end());
-
-  // remove duplicates
-  NumericVector::iterator it = std::unique(combinedVector.begin(), combinedVector.end());
-  combinedVector.erase(it, combinedVector.end());
-  return inverse_cantor_map(combinedVector);
-}
 
 
 // [[Rcpp::export]]
@@ -575,7 +630,7 @@ IntegerVector nzeroindices(NumericVector x) {
     }
   }
 
-  return wrap(indices);  // Convert std::vector to Rcpp IntegerVector
+  return wrap(indices);  //convert std::vector to Rcpp IntegerVector
 }
 
 
@@ -621,7 +676,7 @@ List lassorisky(NumericVector Y, NumericMatrix X, double lambda, IntegerVector n
     std::copy(beta.begin(), beta.end(), beta_old.begin());
     std::copy(theta.begin(), theta.end(), theta_old.begin());
 
-    //update beta
+    //updating]] beta
     for (int b = 0; b < nzerobet; ++b) {
       int j=nzero_indices_beta[b]-1;
       double X_jY = 0;
@@ -659,7 +714,7 @@ List lassorisky(NumericVector Y, NumericMatrix X, double lambda, IntegerVector n
       //theta[zero_indices_theta[i]-1]=0;
     //}
 
-    //update theta
+    //updating theta
     int index = 0;
     for (int k = 0; k < p; ++k) {
       for (int l = k; l < p; ++l) {
@@ -734,7 +789,7 @@ List lassorisky2(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
 
     NumericVector residual(Y);
 
-    // Subtract the contribution of beta coefficients
+    //subtracting contribution of beta coefficients
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < p; ++j) {
         if (beta[j] != 0) {
@@ -743,7 +798,7 @@ List lassorisky2(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
       }
     }
 
-    // Subtract the contribution of theta coefficients
+    //subtracting the contribution of theta coefficients
     int index = 0;
     for (int k = 0; k < p; ++k) {
       for (int l = k; l < p; ++l) {
@@ -833,7 +888,7 @@ List lassorisky3(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
     std::copy(beta.begin(), beta.end(), beta_old.begin());
     std::copy(theta.begin(), theta.end(), theta_old.begin());
 
-    // Update beta
+    //updating beta
     for (int j = 0; j < p; ++j) {
 
       double X_jY = 0;
@@ -865,7 +920,8 @@ List lassorisky3(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
       beta[j] = softThreshold(X_jY / X_jX_j, lambda / X_jX_j);
 
     }
-    //for(int i=0;i<zerobet;++i){
+
+        //for(int i=0;i<zerobet;++i){
       //beta[zero_indices_beta[i]-1]=0;
       //theta[zero_indices_theta[i]-1]=0;
     //}
@@ -885,7 +941,7 @@ List lassorisky3(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
               r_il -= X(i, m)*beta[m];
             }
           }
-          // Interaction terms
+          //interaction terms
           int inner_index = 0;
           for (int m = 0; m < p; ++m){
             for (int n = m; n < p; ++n){
@@ -927,6 +983,7 @@ List lassorisky3(NumericVector Y, NumericMatrix X, double lambda, IntegerVector 
   return List::create(Named("beta") = beta, Named("theta") = theta);
 }
 
+// [[Rcpp::export]]
 NumericMatrix createInteractionMatrix(NumericMatrix X, IntegerVector indices) {
   int n = X.nrow();
   int p = X.ncol();
@@ -970,7 +1027,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
   NumericVector theta_old(num_interactions);
   int nzerobet = nzero_indices_beta.size();
   int nzerothet = nzero_indices_theta.size();
-  double epsilon=1e-10;
+  //double epsilon=1e-10;
 
   for (int iter = 0; iter < max_iter; ++iter) {
     std::copy(beta.begin(), beta.end(), beta_old.begin());
@@ -991,7 +1048,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
     for (int t = 0; t < nzerothet; ++t) {
       int index = nzero_indices_theta[t]-1;
 
-      //Finding the column indices (i, j) for the interactionIndex
+      //getting the column indices (i, j) for the interactionIndex
       int k = 0, l = 0, count = 0;
       bool found = false;
       for (k = 0; k < p; ++k) {
@@ -1013,7 +1070,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
       }
     }
 
-    //update beta
+    //updating beta
     for (int b = 0; b < nzerobet; ++b) {
       int j = nzero_indices_beta[b] - 1;
       double X_jY = 0;
@@ -1022,6 +1079,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
       for (int i = 0; i < n; ++i) {
         double r_ij=residual[i] + X(i, j)*beta[j];
         if(r_ij!=0){
+        //{
         X_jY += X(i, j) * r_ij;
         X_jX_j += X(i, j) * X(i, j);
         }
@@ -1031,11 +1089,11 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
       }
       }
 
-    //update theta
+    //updating theta
     for (int t = 0; t < nzerothet; ++t) {
       int index = nzero_indices_theta[t]-1;
 
-      //find the column indices (i, j) for the interactionIndex
+      //finding the column indices (i, j) for the interactionIndex
       int k = 0, l = 0, count = 0;
       bool found = false;
       for (k = 0; k < p; ++k) {
@@ -1060,11 +1118,11 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
         }
       }
       if(W_klW_kl!=0){
-      theta[index] = softThreshold(W_klY / (W_klW_kl+epsilon), lambda / (W_klW_kl+epsilon));
+      theta[index] = softThreshold(W_klY / (W_klW_kl), lambda / (W_klW_kl));
       }
       }
 
-    //checkingg for convergence
+    //checking for convergence
     double max_diff = 0;
     for (int j = 0; j < p; ++j) {
       max_diff = std::max(max_diff, std::abs(beta[j] - beta_old[j]));
@@ -1082,27 +1140,7 @@ List computesolution(NumericVector Y, NumericMatrix X, IntegerVector nzero_indic
 }
 
 
-///***R
-//# Example usage in R
-//#set.seed(123)
-//n <- 100
-//p <- 5
-//X <- matrix(sample(1:100, n * p, replace = TRUE), n, p)
-
-//#<-normalizeMatrix(X)
-//beta_true <- c(0, 1, 0, 2, 0)
-//theta_true <- c(0, 1,6,8, 99,88,61,43,8,0,0,80,48,0,0)
-//Y <- X %*% beta_true + generate_interaction_matrix(X)%*%theta_true #+ rnorm(n)
-//lambda <- 0.1
-//zero_indices_beta <- c(2,4)
-//zero_indices_theta <- c(2,3,4,5,6, 7,8, 9, 12, 13)
-
-//result <- lassoInteractions(Y, X, lambda, zero_indices_beta, zero_indices_theta)
-//print(result$beta)
-//print(result$theta)
-//*/
-//
-
+//' @export
 // [[Rcpp::export]]
 NumericMatrix normalizeMatrix(NumericMatrix X) {
   int n = X.nrow();
@@ -1279,17 +1317,6 @@ List computesolutionxyz(NumericMatrix X, NumericVector Y, NumericVector lambda_g
 
 
 
-///*** R
-//# Example usage in R
-//X <- matrix(c(1, 2, 3, 4, 5, 6), nrow=3, ncol=2)
-//Y <- c(1, 2, 3, 4, 5)
-
-//X_normalized <- normalizeMatrix(X)
-//Y_normalized <- normalizeVector(Y)
-
-//print(X_normalized)
-//print(Y_normalized)
-//*/
 
 // [[Rcpp::export]]
 NumericMatrix generate_interaction_matrix(NumericMatrix X) {
@@ -1297,7 +1324,7 @@ NumericMatrix generate_interaction_matrix(NumericMatrix X) {
   int p = X.ncol();
   int num_interactions = p * (p + 1) / 2;
 
-  // Init the interaction matrix W
+  //init the interaction matrix W
   NumericMatrix W(n, num_interactions);
 
   int col_idx = 0;
@@ -1373,9 +1400,9 @@ NumericVector generate_uniform_values(int n, double a = 0.0, double b = 1.0) {
 
 // [[Rcpp::export]]
 NumericVector generate_random_projection(int n, int M, bool with_replacement) {
-  NumericVector D = Rcpp::runif(M); // generate a vector D with independent components from U[0, 1]
+  NumericVector D = Rcpp::runif(M); //generating a vector D with independent components from U[0, 1]
 
-  NumericVector R(n); // initialize vector R with zeros
+  NumericVector R(n); //initializing vector R with zeros
   NumericVector indices1(M);
   IntegerVector v = seq(1,n);
   // sampling
@@ -1387,7 +1414,7 @@ NumericVector generate_random_projection(int n, int M, bool with_replacement) {
 
   for (int i = 0; i < n; ++i) {
     IntegerVector ind = findIndex(indices1, i);
-    float sum1 = 0.0; // declare and initialize sum1
+    float sum1 = 0.0; //declaring and initializing sum1
     if(ind.size()==1){
       R[i]=D[ind[0]];
     }
@@ -1676,139 +1703,7 @@ IntegerMatrix makeZ(IntegerMatrix X, IntegerVector Y){
  }
  return Z;}
 
-//[[Rcpp::export]]
-IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs) {
-  //set sizes of array
-  int nu = u.size();
-  int nv = v.size();
 
-  //init two lists to store pairs
-  std::list<int> pairs_u;
-  std::list<int> pairs_v;
-
-  //set pointers
-  int start = 0;
-  int j = 0;
-
-  //set counter
-  int count = 0;
-
-  //set precision epsilon
-  double eps = 0.0000001;
-
-  //start looping through u vector
-  for(int i = 0; i < nu; ++i) {
-
-    //increase if too small
-    while(v[start]<u[i]-eps && start < nv-1) {
-      ++start;
-    }
-
-    //if close consider the pairs that might be close
-    if(std::abs(v[start]-u[i]) < eps) {
-      j = start;
-      while(std::abs(v[j]-u[i]) < eps) {
-        //add pairs that are clsoe
-        pairs_u.push_front(ou[i]);
-        pairs_v.push_front(ov[j]);
-
-        ++j;
-        ++count;
-        if(j >= nv) {
-          break;
-        }
-      }
-    }
-    //if there are too many pairs kill the search
-    if(count > max_number_of_pairs) {
-      break;
-    }
-  }
-  int n = 0;
-  //fill pairs in a 2x|pairs| matrix
-  if(pairs_u.size() > 0) {
-    IntegerMatrix pairs(2,pairs_u.size());
-    while(!pairs_u.empty()) {
-      pairs(0,n)=pairs_u.back();
-      pairs_u.pop_back();
-      pairs(1,n)=pairs_v.back();
-      pairs_v.pop_back();
-      ++n;
-    }
-    return pairs;
-  }
-  IntegerMatrix pairs(2,1);
-  return pairs;
-}
-
-
-//[[Rcpp::export]]
-IntegerMatrix equalpairs2(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs) {
-  //set sizes of array
-  int nu = u.size();
-  int nv = v.size();
-
-  //init two lists to store pairs
-  std::list<int> pairs_u;
-  std::list<int> pairs_v;
-
-  //set pointers
-  int start = 0;
-  int j = 0;
-  int i=0;
-  //set counter
-  int count = 0;
-
-  //set precision epsilon
-
-  if(v[0]<u[0]){
-    ++start;
-  }
-
-  //start looping through u vector
-  while(i < nu) {
-
-    //increase if too small
-    while(v[start]<u[i] && start < nv-1) {
-      ++start;
-    }
-
-    //if close consider the pairs that might be close
-      while(v[j]==u[i]) {
-        //add pairs that are clsoe
-        pairs_u.push_front(ou[i]);
-        pairs_v.push_front(ov[j]);
-        ++j;
-        ++count;
-        if(j >= nv) {
-          break;
-        }
-      }
-      if(u[i]==u[i+1]){
-        ++i;
-      }
-    //++i;
-    //if there are too many pairs kill the search
-    if(count > max_number_of_pairs) {
-      break;
-    }
-  }
-  int n = 0;
-  //fill pairs in a 2x|pairs| matrix
-  if(pairs_u.size() > 0) {
-    IntegerMatrix pairs(2,pairs_u.size());
-    while(!pairs_u.empty()) {
-      pairs(0,n)=pairs_u.back();
-      pairs_u.pop_back();
-      pairs(1,n)=pairs_v.back();
-      pairs_v.pop_back();
-      ++n;
-    }
-    return pairs;
-  }
-  IntegerMatrix pairs(2,1);
-  return pairs;
-}
 
 // [[Rcpp::export]]
 IntegerMatrix expandGrido(IntegerVector vec1, IntegerVector vec2) {
@@ -1828,9 +1723,269 @@ IntegerMatrix expandGrido(IntegerVector vec1, IntegerVector vec2) {
 }
 
 
+/***R
+#set.seed(123)  # For reproducibility
+
+#parameters
+n<- 10  #no: of observations
+p<- 5   #no: of features
+
+#CASE 1- RANDOM SAMPLING (cont. case test for computesolution)
+#------------------------------------------------------------
+
+#set.seed(123)
+n <-100
+p <-5
+X <- matrix(sample(1:100, n * p, replace = TRUE), n, p)
+X<-normalizeMatrix(X)
+beta_true <- c(0, 1, 0, 2, 0) #the beta coefficient values
+theta_true <- c(0, 1,6,8, 99,88,61,43,8,0,0,80,48,0,0) #theta coefficient values
+Y <- X %*% beta_true + generate_interaction_matrix(X)%*%theta_true + rnorm(n)
+lambda <-0.1
+nzero_indices_beta <- c(2,4)  #non-zero indices in beta
+nzero_indices_theta <- c(2,3,4,5,6, 7,8, 9, 12, 13) #non-zero indices in theta
+computesolution(Y, X, nzero_indices_beta, nzero_indices_theta,0.5)
+
+#RESULTS
+#-------
+
+#> computesolution(Y, X, zero_indices_beta, zero_indices_theta,0.5)
+#$beta
+#[1] 0.0000000 0.9922276 0.0000000 1.9792329 0.0000000
+
+#$theta
+#[1]  0.000000  1.135849  5.791832  8.070993 98.980953 88.120388 61.092121 42.954470  8.012439  0.000000
+#[11]  0.000000 79.891271 47.821030  0.000000  0.000000
+
+#CASE 2- INTERACTION SEARCH FOR BINARY Y w/ toeplitz cov
+#-----------------------------------------------
+
+#creating a Toeplitz covariance matrix
+
+rho <- 0.5  #correlation parameter
+sigma <- toeplitz(rho^(0:(p-1)))
+
+library(MASS)
+X_1 <- mvrnorm(n, mu = rep(0, p), Sigma = sigma) #gaussian design matrix
+X_design <- ifelse(X_1 > 0, 1, 0)  #transform the values: -ve to 0, +ve to 1
+Yd<-runif(100, min = -1,max = 1)
+Ydbin<-ifelse(Yd > 0, 1, -1)
+res=uniformSampling(X_design,Ydbin, 10, 50) #uniform sampling and finding eq pairs using pairsearch11()
+getunique(res) #to get unique pairs of integers
+
+#RESULTS
+#-------
+
+#>res=uniformSampling(X_design,Ydbin, 10, 45); res
+#[,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15] [,16] [,17] [,18] [,19]
+#[1,]    3    1    3    3    3    2    2    2    2     1     2     2     0     2     2     3     0     0     0
+#[2,]    3    1    2    2    3    2    2    2    2     1     1     1     0     2     2     3     0     0     0
+#[,20] [,21] [,22] [,23]
+#[1,]     4     1     0     1
+#[2,]     4     1     0     1
+
+#>getunique(res)
+#[,1] [,2] [,3] [,4] [,5] [,6] [,7]
+#[1,]    0    1    2    2    3    3    4
+#[2,]    0    1    1    2    2    3    4
+
+
+#CASE 3-INTERACTION SEARCH FOR CONTINUOUS Y w/ toeplitz cov
+#----------------------------------------------------------
+
+#create a Toeplitz covariance matrix
+
+rho2 <- 0.3  #correlation parameter
+sigma2 <- toeplitz(rho^(0:(p-1)))
+X_2 <- mvrnorm(n, mu = rep(0, p), Sigma = sigma2) #gaussian design matrix
+X_design2 <- ifelse(X_2 > 0, 1, -1)  #transform the values: -ve to -1, +ve to 1
+Yd2<-runif(100, min = -1,max = 1)
+Ydn2<-normalizeVector(Yd2) #dont have to normalise as normalisation is already done w/in sampling functions
+res2=weightedSampling(X_design2,Yd2, 20, 50) #weighted sampling and finding eq pairs using pairsearch11()
+getunique(res2) #to get unique pairs of integers
+
+#RESULTS
+#-------
+
+#> res2=weightedSampling(X_design2,Yd2, 10, 30);res2; #weighted sampling and finding eq pairs using pairsearch11()
+#[,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15] [,16] [,17] [,18] [,19]
+#[1,]    3    0    0    0    0    2    0    0    0     0     0     0     0     0     0     0     0     0     0
+#[2,]    3    0    0    0    0    2    0    0    0     0     0     0     0     0     0     0     0     0     0
+#[,20] [,21] [,22] [,23] [,24] [,25] [,26] [,27] [,28] [,29] [,30] [,31] [,32] [,33] [,34] [,35] [,36] [,37]
+#[1,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     2     0
+#[2,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     2     0
+#[,38] [,39] [,40] [,41] [,42] [,43] [,44] [,45] [,46] [,47] [,48] [,49] [,50] [,51] [,52] [,53] [,54] [,55]
+#[1,]     0     0     0     2     0     0     0     0     3     0     0     0     0     1     0     0     0     0
+#[2,]     0     0     0     2     0     0     0     0     3     0     0     0     0     1     0     0     0     0
+#[,56] [,57] [,58] [,59] [,60] [,61] [,62] [,63] [,64] [,65] [,66] [,67] [,68] [,69] [,70] [,71] [,72] [,73]
+#[1,]     2     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#[2,]     2     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#[,74] [,75] [,76] [,77] [,78] [,79] [,80] [,81] [,82] [,83] [,84] [,85] [,86] [,87] [,88] [,89] [,90] [,91]
+#[1,]     0     0     2     0     0     0     0     3     0     0     0     0     3     0     0     0     0     0
+#[2,]     0     0     2     0     0     0     0     3     0     0     0     0     3     0     0     0     0     0
+#[,92] [,93] [,94] [,95] [,96] [,97] [,98] [,99] [,100] [,101] [,102] [,103] [,104] [,105] [,106] [,107]
+#[1,]     0     0     0     0     4     0     0     0      0      2      0      0      0      0      1      1
+#[2,]     0     0     0     0     4     0     0     0      0      2      0      0      0      0      1      1
+#[,108] [,109] [,110] [,111] [,112] [,113] [,114] [,115] [,116] [,117] [,118] [,119] [,120] [,121] [,122]
+#[1,]      1      1      0      0      0      2      0      0      0      0      2      0      0      0      0
+#[2,]      1      1      0      0      0      2      0      0      0      0      2      0      0      0      0
+#[,123] [,124] [,125] [,126] [,127] [,128] [,129] [,130] [,131] [,132] [,133] [,134] [,135] [,136] [,137]
+#[1,]      1      1      1      1      0      0      0      1      1      1      1      0      0      0      4
+#[2,]      1      1      1      1      0      0      0      1      1      1      1      0      0      0      4
+#[,138] [,139] [,140] [,141] [,142] [,143] [,144] [,145] [,146] [,147] [,148] [,149] [,150] [,151] [,152]
+#[1,]      0      0      0      0      0      0      0      0      0      3      0      0      0      0      2
+#[2,]      0      0      0      0      0      0      0      0      0      3      0      0      0      0      2
+#[,153] [,154] [,155] [,156]
+#[1,]      0      0      0      0
+#[2,]      0      0      0      0
+#> getunique(res2) #to get unique pairs of integers
+#[,1] [,2] [,3] [,4] [,5]
+#[1,]    0    1    2    3    4
+#[2,]    0    1    2    3    4
+
+
+#CASE 4- INTERACTION SEARCH FOR BINARY Y w/ randomized matrix
+#-----------------------------------------------
+
+#create a random matrix and vector w/values from -1 to 1
+X4 <- matrix(runif(n * p, min = -1, max = 1), nrow =n, ncol =p)
+X4_d <- ifelse(X4 > 0, 1, -1)
+Y4<-runif(100, min = -1,max = 1)
+Y4_d <- ifelse(Y4 > 0, 1, -1)
+uniformSampling(X4_d,Y4_d,10,50)
+
+#RESULTS
+#-------
+
+#> res4=uniformSampling(X4_d,Y4_d,10,50)
+#> res4
+#[,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15] [,16] [,17]
+#[1,]    2    2    0    2    2    1    2    4    0     3     0     1     0     0     0     2     2
+#[2,]    2    2    0    2    2    1    2    4    0     3     0     1     0     0     0     2     2
+#> getunique(res4)
+#[,1] [,2] [,3] [,4] [,5]
+#[1,]    0    1    2    3    4
+#[2,]    0    1    2    3    4
+
+#CASE 5- INTERACTION SEARCH FOR CONTINUOUS Y w/ randomized matrix
+#----------------------------------------------------------------
+
+#create a random matrix and vector w/values from -1 to 1
+X5 <- matrix(runif(n * p, min = -1, max = 1), nrow =n, ncol =p)
+X5_d <- ifelse(X5 > 0, 1, -1)
+Y5<-runif(100, min = -1,max = 1)
+weightedSampling(X5_d,Y5,10,40)
+getunique(weightedSampling(X5_d,Y5,10,40))
+getunique(weightedSampling(X5_d,Y5,30,40))
+getunique(weightedSampling(X5_d,Y5,45,40))
+getunique(weightedSampling(X5_d,Y5,45,60))
+
+
+#RESULTS
+#-------
+
+#> getunique(weightedSampling(X5_d,Y5,10,40))
+#[,1] [,2] [,3] [,4] [,5]
+#[1,]    0    1    2    3    4
+#[2,]    0    1    2    3    4
+
+#> getunique(weightedSampling(X5_d,Y5,30,40))
+#[,1] [,2] [,3] [,4] [,5]
+#[1,]    0    1    2    3    4
+#[2,]    0    1    2    3    4
+
+#> getunique(weightedSampling(X5_d,Y5,45,40))
+#[,1] [,2] [,3] [,4] [,5]
+#[1,]    0    1    2    3    4
+#[2,]    0    1    2    3    4
+
+#> getunique(weightedSampling(X5_d,Y5,45,60))
+#[,1] [,2] [,3] [,4] [,5]
+#[1,]    0    1    2    3    4
+#[2,]    0    1    2    3    4
+
+#CASE 6- 500 X 5 RANDOM SAMPLING (cont. case test for computesolution)
+#------------------------------------------------------------
+
+n1 <-500
+p1 <-5
+Xq <- matrix(sample(1:500, n1 * p1, replace = TRUE), n1, p1)
+Xq<-normalizeMatrix(Xq)
+beta_true1 <- c(0, 1, 4.5, 9, 50) #the beta coefficient values
+theta_true1 <- c(0, 1,6,0, 0,23,1,4,8,0,0,9.5,4.8,10,0) #theta coefficinet values
+Yq <- Xq %*% beta_true1 + generate_interaction_matrix(Xq)%*%theta_true1 + rnorm(n1)
+#lambda <-0.1
+nzero_indices_beta1 <- c(2,3,4,5)  #non-zero indices in beta
+nzero_indices_theta1 <- c(2,3,6, 7,8, 9, 12, 13,14) #non-zero indices in theta
+computesolution(Yq, Xq, nzero_indices_beta1, nzero_indices_theta1,0.5)
+
+#RESULTS
+#-------
+
+#> computesolution(Yq, Xq, nzero_indices_beta1, nzero_indices_theta1,0.5)
+#$beta
+#[1]  0.0000000  0.9069347  4.5303639  9.0262536 49.9705656
+
+#$theta
+#[1]  0.0000000  0.9705311  6.0368197  0.0000000  0.0000000 22.9936102  0.9457652  3.9673389  8.0219062  0.0000000
+#[11]  0.0000000  9.4622569  4.7832820 10.0098533  0.0000000
+
+#CASE 7- 1000 X 5 RANDOM SAMPLING (cont. case test for computesolution)
+#------------------------------------------------------------
+
+n2 <-1000
+p2 <-5
+Xp <- matrix(sample(1:950, n2 * p2, replace = TRUE), n2, p2)
+Xp<-normalizeMatrix(Xp)
+beta_true2 <- c(0, 1, 4.5, 9, 50) #the beta coefficient values
+theta_true2 <- c(0, 1,6,0, 0,23,1,4,8,0,0,9.5,4.8,10,0) #theta coefficinet values
+Yp <- Xp %*% beta_true2 + generate_interaction_matrix(Xp)%*%theta_true2 + rnorm(n2)
+nzero_indices_beta2 <- c(2,3,4,5)  #non-zero indices in beta
+nzero_indices_theta2 <- c(2,3,6, 7,8, 9, 12, 13,14) #non-zero indices in theta
+computesolution(Yp, Xp, nzero_indices_beta2, nzero_indices_theta2,0.5)
+
+#RESULTS
+#-------
+
+#> computesolution(Yp, Xp, nzero_indices_beta2, nzero_indices_theta2,0.5)
+#$beta
+#[1]  0.000000  1.000353  4.482866  9.019077 50.017071
+
+#$theta
+#[1]  0.000000  1.067835  5.991539  0.000000  0.000000 23.007216  1.072638  4.049473  7.960569  0.000000  0.000000
+#[12]  9.489147  4.830940 10.023127  0.000000
+
+
+#CASE 8- 1500 X 5 RANDOM SAMPLING (cont. case test for computesolution)
+#------------------------------------------------------------
+
+n3 <-1500
+p3 <-5
+Xw <- matrix(sample(1:1450, n3* p3, replace = TRUE), n3, p3)
+Xw<-normalizeMatrix(Xw)
+beta_true3 <- c(0, 1.6, 4, 99, 5) #the beta coefficient values
+theta_true3 <- c(0, 0,6,24, 8,2,0,4,87,10,0,0,0,60,0) #theta coefficinet values
+Yw <- Xw %*% beta_true3 + generate_interaction_matrix(Xw)%*%theta_true3 + rnorm(n3)
+nzero_indices_beta3 <- c(2,3,4,5)  #non-zero indices in beta
+nzero_indices_theta3 <- c(3,4,5,6,8, 9,10,14) #non-zero indices in theta
+computesolution(Yw, Xw, nzero_indices_beta3, nzero_indices_theta3,0.5)
+
+#RESULTS
+#-------
+
+#> computesolution(Yw, Xw, nzero_indices_beta3, nzero_indices_theta3,0.5)
+#$beta
+#[1]  0.000000  1.600520  3.985663 99.042312  4.989787
+
+#$theta
+#[1]  0.000000  0.000000  5.991907 24.072027  7.988886  2.015470  0.000000  3.989898 86.961989  9.991653  0.000000
+#[12]  0.000000  0.000000 59.986628  0.000000
 
 
 
+
+
+*/
 
 
 
