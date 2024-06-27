@@ -129,6 +129,10 @@ getInteractionColumn <- function(IND, p) {
     .Call(`_testxyz1_getInteractionColumn`, IND, p)
 }
 
+getInteractionIndices <- function(columns, p) {
+    .Call(`_testxyz1_getInteractionIndices`, columns, p)
+}
+
 pair_search4 <- function(x, y) {
     .Call(`_testxyz1_pair_search4`, x, y)
 }
@@ -141,16 +145,16 @@ pairsearch11 <- function(a_positions, b_positions, a_sorted_values, b_sorted_val
     .Call(`_testxyz1_pairsearch11`, a_positions, b_positions, a_sorted_values, b_sorted_values)
 }
 
+getunique <- function(combined) {
+    .Call(`_testxyz1_getunique`, combined)
+}
+
 uniformSampling <- function(X, Y, p, k) {
     .Call(`_testxyz1_uniformSampling`, X, Y, p, k)
 }
 
 weightedSampling <- function(X, Y, p, k) {
     .Call(`_testxyz1_weightedSampling`, X, Y, p, k)
-}
-
-getunique <- function(combined) {
-    .Call(`_testxyz1_getunique`, combined)
 }
 
 nzeroindices <- function(x) {
@@ -173,10 +177,15 @@ lassorisky3 <- function(Y, X, lambda, zero_indices_beta, zero_indices_theta, max
     .Call(`_testxyz1_lassorisky3`, Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter, tol)
 }
 
+createInteractionMatrix <- function(X, indices) {
+    .Call(`_testxyz1_createInteractionMatrix`, X, indices)
+}
+
 computesolution <- function(Y, X, nzero_indices_beta, nzero_indices_theta, lambda, max_iter = 1000L, tol = 1e-6) {
     .Call(`_testxyz1_computesolution`, Y, X, nzero_indices_beta, nzero_indices_theta, lambda, max_iter, tol)
 }
 
+#' @export
 normalizeMatrix <- function(X) {
     .Call(`_testxyz1_normalizeMatrix`, X)
 }
@@ -267,14 +276,6 @@ rs <- function(n, minValue = 0L, maxValue = 100L) {
 
 makeZ <- function(X, Y) {
     .Call(`_testxyz1_makeZ`, X, Y)
-}
-
-equalpairs <- function(u, v, ou, ov, max_number_of_pairs) {
-    .Call(`_testxyz1_equalpairs`, u, v, ou, ov, max_number_of_pairs)
-}
-
-equalpairs2 <- function(u, v, ou, ov, max_number_of_pairs) {
-    .Call(`_testxyz1_equalpairs2`, u, v, ou, ov, max_number_of_pairs)
 }
 
 expandGrido <- function(vec1, vec2) {

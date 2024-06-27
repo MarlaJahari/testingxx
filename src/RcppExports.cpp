@@ -387,6 +387,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getInteractionIndices
+NumericMatrix getInteractionIndices(IntegerVector columns, int p);
+RcppExport SEXP _testxyz1_getInteractionIndices(SEXP columnsSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type columns(columnsSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(getInteractionIndices(columns, p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // pair_search4
 List pair_search4(NumericVector x, NumericVector y);
 RcppExport SEXP _testxyz1_pair_search4(SEXP xSEXP, SEXP ySEXP) {
@@ -424,6 +436,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getunique
+NumericMatrix getunique(NumericMatrix combined);
+RcppExport SEXP _testxyz1_getunique(SEXP combinedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type combined(combinedSEXP);
+    rcpp_result_gen = Rcpp::wrap(getunique(combined));
+    return rcpp_result_gen;
+END_RCPP
+}
 // uniformSampling
 NumericMatrix uniformSampling(NumericMatrix X, NumericVector Y, int p, int k);
 RcppExport SEXP _testxyz1_uniformSampling(SEXP XSEXP, SEXP YSEXP, SEXP pSEXP, SEXP kSEXP) {
@@ -449,17 +472,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type p(pSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     rcpp_result_gen = Rcpp::wrap(weightedSampling(X, Y, p, k));
-    return rcpp_result_gen;
-END_RCPP
-}
-// getunique
-NumericMatrix getunique(NumericMatrix combined);
-RcppExport SEXP _testxyz1_getunique(SEXP combinedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type combined(combinedSEXP);
-    rcpp_result_gen = Rcpp::wrap(getunique(combined));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -534,6 +546,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     rcpp_result_gen = Rcpp::wrap(lassorisky3(Y, X, lambda, zero_indices_beta, zero_indices_theta, max_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// createInteractionMatrix
+NumericMatrix createInteractionMatrix(NumericMatrix X, IntegerVector indices);
+RcppExport SEXP _testxyz1_createInteractionMatrix(SEXP XSEXP, SEXP indicesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type indices(indicesSEXP);
+    rcpp_result_gen = Rcpp::wrap(createInteractionMatrix(X, indices));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -837,36 +861,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// equalpairs
-IntegerMatrix equalpairs(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs);
-RcppExport SEXP _testxyz1_equalpairs(SEXP uSEXP, SEXP vSEXP, SEXP ouSEXP, SEXP ovSEXP, SEXP max_number_of_pairsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type u(uSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type v(vSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type ou(ouSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type ov(ovSEXP);
-    Rcpp::traits::input_parameter< int >::type max_number_of_pairs(max_number_of_pairsSEXP);
-    rcpp_result_gen = Rcpp::wrap(equalpairs(u, v, ou, ov, max_number_of_pairs));
-    return rcpp_result_gen;
-END_RCPP
-}
-// equalpairs2
-IntegerMatrix equalpairs2(NumericVector u, NumericVector v, IntegerVector ou, IntegerVector ov, int max_number_of_pairs);
-RcppExport SEXP _testxyz1_equalpairs2(SEXP uSEXP, SEXP vSEXP, SEXP ouSEXP, SEXP ovSEXP, SEXP max_number_of_pairsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type u(uSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type v(vSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type ou(ouSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type ov(ovSEXP);
-    Rcpp::traits::input_parameter< int >::type max_number_of_pairs(max_number_of_pairsSEXP);
-    rcpp_result_gen = Rcpp::wrap(equalpairs2(u, v, ou, ov, max_number_of_pairs));
-    return rcpp_result_gen;
-END_RCPP
-}
 // expandGrido
 IntegerMatrix expandGrido(IntegerVector vec1, IntegerVector vec2);
 RcppExport SEXP _testxyz1_expandGrido(SEXP vec1SEXP, SEXP vec2SEXP) {
@@ -913,17 +907,19 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_normalizeL1", (DL_FUNC) &_testxyz1_normalizeL1, 1},
     {"_testxyz1_transformY", (DL_FUNC) &_testxyz1_transformY, 1},
     {"_testxyz1_getInteractionColumn", (DL_FUNC) &_testxyz1_getInteractionColumn, 2},
+    {"_testxyz1_getInteractionIndices", (DL_FUNC) &_testxyz1_getInteractionIndices, 2},
     {"_testxyz1_pair_search4", (DL_FUNC) &_testxyz1_pair_search4, 2},
     {"_testxyz1_stl_sort", (DL_FUNC) &_testxyz1_stl_sort, 1},
     {"_testxyz1_pairsearch11", (DL_FUNC) &_testxyz1_pairsearch11, 4},
+    {"_testxyz1_getunique", (DL_FUNC) &_testxyz1_getunique, 1},
     {"_testxyz1_uniformSampling", (DL_FUNC) &_testxyz1_uniformSampling, 4},
     {"_testxyz1_weightedSampling", (DL_FUNC) &_testxyz1_weightedSampling, 4},
-    {"_testxyz1_getunique", (DL_FUNC) &_testxyz1_getunique, 1},
     {"_testxyz1_nzeroindices", (DL_FUNC) &_testxyz1_nzeroindices, 1},
     {"_testxyz1_softThreshold", (DL_FUNC) &_testxyz1_softThreshold, 2},
     {"_testxyz1_lassorisky", (DL_FUNC) &_testxyz1_lassorisky, 7},
     {"_testxyz1_lassorisky2", (DL_FUNC) &_testxyz1_lassorisky2, 7},
     {"_testxyz1_lassorisky3", (DL_FUNC) &_testxyz1_lassorisky3, 7},
+    {"_testxyz1_createInteractionMatrix", (DL_FUNC) &_testxyz1_createInteractionMatrix, 2},
     {"_testxyz1_computesolution", (DL_FUNC) &_testxyz1_computesolution, 7},
     {"_testxyz1_normalizeMatrix", (DL_FUNC) &_testxyz1_normalizeMatrix, 1},
     {"_testxyz1_normalizeVector", (DL_FUNC) &_testxyz1_normalizeVector, 1},
@@ -948,8 +944,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_testxyz1_r", (DL_FUNC) &_testxyz1_r, 3},
     {"_testxyz1_rs", (DL_FUNC) &_testxyz1_rs, 3},
     {"_testxyz1_makeZ", (DL_FUNC) &_testxyz1_makeZ, 2},
-    {"_testxyz1_equalpairs", (DL_FUNC) &_testxyz1_equalpairs, 5},
-    {"_testxyz1_equalpairs2", (DL_FUNC) &_testxyz1_equalpairs2, 5},
     {"_testxyz1_expandGrido", (DL_FUNC) &_testxyz1_expandGrido, 2},
     {NULL, NULL, 0}
 };
